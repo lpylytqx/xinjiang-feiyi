@@ -23,18 +23,12 @@ test_api.py
 test_kolors.py
 list_models.py
 
-# ---- 图片与音频素材（体积过大，不纳入版本库）----
-*.mp3
-*.jpg
-*.jpeg
-*.png
-
-# ---- 运行时产物 ----
-static/generated/
-
-# ---- 本地备份与工具目录 ----
+# ---- 不入库的本地目录 ----
+# 说明：static/images/ 与 static/audio/ 的素材**需要入库**（约 10 MB），
+#       这样克隆后可直接运行；以下目录属于备份与运行时产物，无需入库。
 _backup_images/
 _backup_audio/
+static/generated/
 .dsh-notes/
 .dsh-pyenv/
 
