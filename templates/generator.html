@@ -1,0 +1,344 @@
+{% extends "base.html" %}
+{% block title %}纹样生成器 - 新疆非遗文化互动体验平台{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <h2>🎨 AI纹样生成器</h2>
+        <p class="desc">两种玩法：输入关键词让系统生成纹样；或者亲手在画板上画几笔，由系统沿着你的笔触补全成完整纹样——从「观看」变成「参与创作」。</p>
+
+        <div class="mode-tabs" role="tablist">
+            <button type="button" class="mode-tab active" data-mode="keyword" role="tab">✏️ 关键词生成</button>
+            <button type="button" class="mode-tab" data-mode="draw" role="tab">🖌️ 手绘创作</button>
+        </div>
+
+        <!-- ============ 模式一：关键词生成 ============ -->
+        <div class="mode-panel" id="panel-keyword">
+            <form method="get" action="{{ url_for('generator') }}">
+                <div class="form-group">
+                    <label for="keyword">纹样元素关键词</label>
+                    <input type="text" id="keyword" name="keyword" placeholder="例如：玫瑰花、石榴、巴旦木、月亮..."
+                           value="{{ keyword or '' }}" maxlength="20" required>
+                    <div class="example-row">
+                        <span class="example-label">试试这些：</span>
+                        {% for ex in keyword_examples %}
+                        <a class="example-chip" href="{{ url_for('generator', keyword=ex, style=selected_style) }}">{{ ex }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>选择纹样风格</label>
+                    <div class="style-options">
+                        {% for s in style_options %}
+                        <label class="style-option">
+                            <input type="radio" name="style" value="{{ s.key }}"
+                                   {% if s.key == (selected_style or 'embroidery') %}checked{% endif %}
+                                   style="margin-right:6px;">
+                            {{ s.label }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <button type="submit" class="generate-btn">✨ 生成我的专属纹样</button>
+            </form>
+
+            {% if result_img %}
+            <div class="result">
+                <h3>生成结果：{{ result_keyword }} · {{ result_style }}</h3>
+                <img src="{{ result_img }}" alt="{{ result_keyword }}纹样" loading="lazy">
+                <p class="info">{{ style_info[selected_style].desc }}</p>
+                <p class="info">此纹样由 AI 辅助生成 · 仅供学习参考</p>
+                <a class="link-btn" href="{{ url_for('generator', keyword=result_keyword, style=selected_style) }}">↻ 再生成一次</a>
+            </div>
+            {% else %}
+            <div class="placeholder">
+                <p>输入关键词，点击生成，看看能生成什么纹样</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- ============ 模式二：手绘创作 ============ -->
+        <div class="mode-panel" id="panel-draw" hidden>
+            <div class="draw-toolbar">
+                <label class="tool-group" for="brushSize">
+                    <span>画笔</span>
+                    <input type="range" id="brushSize" min="2" max="26" value="8">
+                    <span class="tool-value" id="brushSizeValue">8</span>
+                </label>
+                <button type="button" class="tool-btn" id="undoBtn">↶ 撤销</button>
+                <button type="button" class="tool-btn" id="clearBtn">✕ 清空</button>
+            </div>
+
+            <div class="canvas-wrap">
+                <canvas id="sketchCanvas" width="720" height="720"
+                        aria-label="手绘纹样画板"></canvas>
+                <p class="canvas-hint">在画布上随手画几笔——花瓣、藤蔓、几何线条都可以，画完点下面的按钮，系统会沿你的笔触补全成完整纹样。</p>
+            </div>
+
+            <div class="form-group">
+                <label>选择纹样风格</label>
+                <div class="style-options">
+                    {% for s in style_options %}
+                    <label class="style-option">
+                        <input type="radio" name="drawStyle" value="{{ s.key }}"
+                               {% if s.key == (selected_style or 'embroidery') %}checked{% endif %}
+                               style="margin-right:6px;">
+                        {{ s.label }}
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="drawKeyword">关键词（可选）</label>
+                <input type="text" id="drawKeyword" placeholder="例如：石榴花、巴旦木、月亮——会用于生成纹样解读"
+                       maxlength="20">
+            </div>
+
+            <button type="button" class="generate-btn" id="sketchBtn">🖌️ 让 AI 补全我的纹样</button>
+
+            <div class="result-area" id="sketchResult" hidden>
+                <div class="loading" id="sketchLoading" hidden>
+                    <div class="spinner" aria-hidden="true"></div>
+                    <p>正在沿你的笔触补全纹样…</p>
+                    <p class="loading-hint">通常几秒内完成</p>
+                </div>
+
+                <div id="sketchOutput" hidden>
+                    <div class="sketch-compare">
+                        <div class="compare-item">
+                            <h4>你的线稿</h4>
+                            <img id="sketchOriginal" alt="手绘线稿">
+                        </div>
+                        <div class="compare-item">
+                            <h4 id="sketchResultTitle">补全结果</h4>
+                            <img id="sketchResultImg" alt="补全后的纹样">
+                        </div>
+                    </div>
+
+                    <div class="sketch-commentary" id="sketchCommentary" hidden>
+                        <h4>📖 纹样解读</h4>
+                        <p id="commentaryText"></p>
+                    </div>
+
+                    <p class="result-note" id="sketchNote"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>📖 三种纹样风格</h2>
+        <p class="desc">不同非遗项目的图案各有讲究，选择风格前可以先了解一下它们的差别。</p>
+        <div class="style-grid">
+            {% for s in style_options %}
+            <div class="style-card">
+                <h3>{{ s.label }}</h3>
+                <p>{{ style_info[s.key].desc }}</p>
+                <div class="tag-list">
+                    {% for t in style_info[s.key].traits %}<span class="tag">{{ t }}</span>{% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>🖼️ 纹样图鉴</h2>
+        <p class="desc">以下纹样由 AI 辅助生成，可作为理解新疆民族图案与配色的参考。</p>
+        {% for s in style_options %}
+        <div class="gallery-group">
+            <h4>{{ s.label }}</h4>
+            <div class="pattern-grid">
+                {% for img in pattern_library[s.key] %}
+                <img src="{{ img }}" alt="{{ s.label }}纹样示例" loading="lazy">
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    'use strict';
+
+    /* ---------------- 模式切换 ---------------- */
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('.mode-tab'));
+    var panels = {
+        keyword: document.getElementById('panel-keyword'),
+        draw: document.getElementById('panel-draw')
+    };
+
+    tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+            var mode = tab.getAttribute('data-mode');
+            tabs.forEach(function (t) { t.classList.toggle('active', t === tab); });
+            Object.keys(panels).forEach(function (k) { panels[k].hidden = (k !== mode); });
+        });
+    });
+
+    /* ---------------- 画板 ---------------- */
+    var canvas = document.getElementById('sketchCanvas');
+    var ctx = canvas.getContext('2d');
+    var brushInput = document.getElementById('brushSize');
+    var brushValue = document.getElementById('brushSizeValue');
+    var undoBtn = document.getElementById('undoBtn');
+    var clearBtn = document.getElementById('clearBtn');
+    var sketchBtn = document.getElementById('sketchBtn');
+
+    var history = [];
+    var HISTORY_MAX = 25;
+    var drawing = false;
+    var busy = false;
+
+    function fillBase() {
+        ctx.fillStyle = '#FFFDF8';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function setupBrush() {
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.strokeStyle = '#3A2418';
+        ctx.lineWidth = Number(brushInput.value);
+    }
+
+    fillBase();
+    setupBrush();
+
+    brushInput.addEventListener('input', function () {
+        brushValue.textContent = brushInput.value;
+        ctx.lineWidth = Number(brushInput.value);
+    });
+
+    function pushHistory() {
+        if (history.length >= HISTORY_MAX) { history.shift(); }
+        try { history.push(ctx.getImageData(0, 0, canvas.width, canvas.height)); } catch (e) { /* 忽略 */ }
+    }
+
+    undoBtn.addEventListener('click', function () {
+        if (!history.length) { return; }
+        ctx.putImageData(history.pop(), 0, 0);
+        setupBrush();
+    });
+
+    clearBtn.addEventListener('click', function () {
+        pushHistory();
+        fillBase();
+        setupBrush();
+    });
+
+    /* 把屏幕坐标换算成画布坐标（画布被 CSS 缩放过） */
+    function toCanvasPoint(e) {
+        var rect = canvas.getBoundingClientRect();
+        return {
+            x: (e.clientX - rect.left) * canvas.width / rect.width,
+            y: (e.clientY - rect.top) * canvas.height / rect.height
+        };
+    }
+
+    canvas.addEventListener('pointerdown', function (e) {
+        if (busy) { return; }
+        canvas.setPointerCapture(e.pointerId);
+        pushHistory();
+        drawing = true;
+        var p = toCanvasPoint(e);
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(p.x + 0.1, p.y + 0.1);   // 单击也能落下一个点
+        ctx.stroke();
+    });
+
+    canvas.addEventListener('pointermove', function (e) {
+        if (!drawing || busy) { return; }
+        var p = toCanvasPoint(e);
+        ctx.lineTo(p.x, p.y);
+        ctx.stroke();
+    });
+
+    function endStroke() { drawing = false; }
+    canvas.addEventListener('pointerup', endStroke);
+    canvas.addEventListener('pointercancel', endStroke);
+    canvas.addEventListener('pointerleave', endStroke);
+
+    /* ---------------- 提交生成 ---------------- */
+    var resultArea = document.getElementById('sketchResult');
+    var loadingEl = document.getElementById('sketchLoading');
+    var outputEl = document.getElementById('sketchOutput');
+    var originalImg = document.getElementById('sketchOriginal');
+    var resultImg = document.getElementById('sketchResultImg');
+    var resultTitle = document.getElementById('sketchResultTitle');
+    var noteEl = document.getElementById('sketchNote');
+    var commentaryBox = document.getElementById('sketchCommentary');
+    var commentaryText = document.getElementById('commentaryText');
+
+    function setBusy(state) {
+        busy = state;
+        sketchBtn.disabled = state;
+        sketchBtn.textContent = state ? '补全中…' : '🖌️ 让 AI 补全我的纹样';
+    }
+
+    sketchBtn.addEventListener('click', function () {
+        if (busy) { return; }
+
+        var styleInput = document.querySelector('input[name="drawStyle"]:checked');
+        var style = styleInput ? styleInput.value : 'embroidery';
+        var keyword = (document.getElementById('drawKeyword').value || '').trim();
+        var sketchData = canvas.toDataURL('image/png');
+
+        resultArea.hidden = false;
+        loadingEl.hidden = false;
+        outputEl.hidden = true;
+        originalImg.src = sketchData;
+        setBusy(true);
+
+        fetch('/api/pattern', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sketch: sketchData, style: style, keyword: keyword })
+        })
+            .then(function (resp) {
+                if (!resp.ok) { throw new Error('服务返回 ' + resp.status); }
+                return resp.json();
+            })
+            .then(function (result) {
+                if (!result.success) { throw new Error(result.error || '生成失败'); }
+
+                resultImg.src = result.image_url;
+                resultTitle.textContent = (keyword ? keyword + ' · ' : '') + result.style;
+
+                if (result.commentary) {
+                    commentaryText.textContent = result.commentary;
+                    commentaryBox.hidden = false;
+                } else {
+                    commentaryBox.hidden = true;
+                }
+
+                if (result.mode === 'ai') {
+                    noteEl.textContent = '✓ 已由 AI 沿你的笔触补全生成，可右键另存。';
+                    noteEl.className = 'result-note is-ok';
+                } else {
+                    noteEl.textContent = '✓ 已按你的笔触合成纹样（本地合成模式：未配置图像接口或调用失败，不影响演示）。';
+                    noteEl.className = 'result-note is-demo';
+                }
+                outputEl.hidden = false;
+                outputEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            })
+            .catch(function (err) {
+                noteEl.textContent = '✗ 生成失败：' + err.message;
+                noteEl.className = 'result-note is-error';
+                outputEl.hidden = false;
+            })
+            .finally(function () {
+                loadingEl.hidden = true;
+                setBusy(false);
+            });
+    });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}关于项目 - 新疆非遗文化互动体验平台{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card section-card">
+        <h2>📋 项目背景</h2>
+        <p>新疆作为多民族聚居地区，拥有丰富的非物质文化遗产资源。然而，传统非遗传播方式以静态展示为主，缺乏互动性和沉浸感，年轻人对非遗的了解途径有限。</p>
+        <p>本项目利用AIGC技术，将新疆非遗文化以多模态、可交互的形式呈现，让用户通过浏览、创作、互动、答题等多种方式，沉浸式体验新疆各民族非遗文化之美。</p>
+    </div>
+
+    <div class="card section-card">
+        <h2>🛠️ 技术方案</h2>
+        <div class="tech-badges">
+            <span class="badge">Python + Flask</span>
+            <span class="badge">HTML / CSS / JavaScript</span>
+            <span class="badge">AIGC 内容生成</span>
+            <span class="badge">AI 语音合成</span>
+            <span class="badge">HTML5 Audio</span>
+        </div>
+        <p>项目采用轻量级Web架构，后端使用 Python Flask 框架提供页面路由与内容服务，前端使用原生 HTML/CSS/JavaScript 开发，不依赖任何前端框架与外部 CDN，断网环境下仍可完整演示。</p>
+        <p>图文讲解、纹样素材与语音讲解均已本地化部署，AIGC 接口作为可选增强能力接入：未配置密钥时运行演示数据版本，配置后自动切换为实时生成。</p>
+    </div>
+
+    <div class="card section-card">
+        <h2>✨ 创新点</h2>
+        <ul>
+            <li><strong>多模态融合</strong>：文字、图片、语音、音乐多模态结合，全方位呈现非遗文化</li>
+            <li><strong>生成式创作</strong>：用户输入关键词，生成新疆民族风格纹样，从“观看”到“参与创作”</li>
+            <li><strong>互动式学习</strong>：乐器弹奏、知识问答等游戏化设计，提升学习趣味性</li>
+            <li><strong>地域文化数字化</strong>：立足新疆本土非遗，用科技手段助力民族文化传播</li>
+        </ul>
+    </div>
+
+    <div class="card section-card">
+        <h2>📁 功能模块</h2>
+        <ul>
+            <li><strong>非遗浏览</strong>：5 个代表性非遗项目的图文与语音讲解，并梳理纹样演变脉络</li>
+            <li><strong>纹样生成器</strong>：输入关键词生成新疆民族风格纹样</li>
+            <li><strong>冬不拉弹奏</strong>：互动式乐器体验，支持手动拨弦和预设旋律播放</li>
+            <li><strong>知识问答</strong>：非遗知识小测验，游戏化学习</li>
+            <li><strong>服饰展示</strong>：新疆各民族传统服饰图文展示，附常见服饰元素图鉴</li>
+            <li><strong>非遗地图</strong>：依据公开行政区划数据绘制的分布地图，点击城市标记查看对应项目</li>
+            <li><strong>纹样祈福</strong>：以抽签形式认识民族纹样母题，了解其寓意</li>
+            <li><strong>AI 换装</strong>：上传照片，由图像编辑模型换上各民族传统服饰</li>
+        </ul>
+    </div>
+
+    <div class="card section-card">
+        <h2>⚠️ AIGC内容标注</h2>
+        <div class="highlight">
+            <p>本作品中部分图片、语音、文字内容由AI辅助生成，已在页脚统一标注。</p>
+            <p>非遗知识内容参考公开资料整理，并尽量核对权威来源；如有疏漏或表述不当之处，欢迎指正，我们将及时修订。</p>
+            <p>本作品仅供教学展示与文化传播使用，不用作任何商业用途。</p>
+        </div>
+    </div>
+
+    <div class="card section-card">
+        <h2>👥 团队分工</h2>
+        <ul>
+            <li><strong>后端开发与系统集成</strong>：Web 框架搭建、路由与接口对接、功能实现</li>
+            <li><strong>前端设计与UI美化</strong>：页面设计、交互优化、视觉呈现</li>
+            <li><strong>内容策划与文案撰写</strong>：非遗资料整理、文案撰写、申报材料与演示视频</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

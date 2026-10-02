@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+{% block title %}非遗地图 - 新疆非遗文化互动体验平台{% endblock %}
+
+{% block content %}
+<div class="container mid">
+    <div class="card">
+        <h2>🗺️ 新疆非遗分布地图</h2>
+        <p class="desc">地图边界与地州划分依据公开行政区划数据绘制。点击地图上的标记或右侧列表，查看对应地区的代表性非遗项目。</p>
+
+        <div class="map-layout">
+            <div class="map-stage">
+                <svg viewBox="0 0 800 620" xmlns="http://www.w3.org/2000/svg" role="img"
+                     aria-label="新疆维吾尔自治区非遗项目分布示意图">
+                    {% include "_map_path.svg" %}
+
+                    <g class="map-site" data-site="yining" tabindex="0" role="button"
+                       aria-label="伊犁哈萨克自治州：哈萨克族冬不拉艺术">
+                        <circle class="site-pulse" cx="292.4" cy="224.2" r="9"/>
+                        <circle class="site-dot" cx="292.4" cy="224.2" r="8"/>
+                        <text x="292.4" y="203">伊犁</text>
+                    </g>
+
+                    <g class="map-site" data-site="wuqia" tabindex="0" role="button"
+                       aria-label="克孜勒苏柯尔克孜自治州：玛纳斯史诗">
+                        <circle class="site-pulse" cx="112.3" cy="390.6" r="9"/>
+                        <circle class="site-dot" cx="112.3" cy="390.6" r="8"/>
+                        <text x="98" y="370">克州</text>
+                    </g>
+
+                    <g class="map-site" data-site="kashgar" tabindex="0" role="button"
+                       aria-label="喀什地区：维吾尔族刺绣">
+                        <circle class="site-pulse" cx="134.2" cy="400.5" r="9"/>
+                        <circle class="site-dot" cx="134.2" cy="400.5" r="8"/>
+                        <text x="160" y="428">喀什</text>
+                    </g>
+
+                    <g class="map-site" data-site="hotan" tabindex="0" role="button"
+                       aria-label="和田地区：艾德莱斯绸织造技艺与地毯编织技艺">
+                        <circle class="site-pulse" cx="250.9" cy="494" r="9"/>
+                        <circle class="site-dot" cx="250.9" cy="494" r="8"/>
+                        <text x="274" y="518">和田</text>
+                    </g>
+                </svg>
+
+                <div class="map-compass" aria-hidden="true">
+                    <span class="compass-arrow">▲</span>
+                    <span class="compass-label">N</span>
+                </div>
+
+                <div class="map-tip" id="mapTip"></div>
+            </div>
+
+            <aside class="map-side">
+                <h3>非遗项目</h3>
+                <ul class="site-list" id="siteList">
+                    <li>
+                        <button type="button" class="site-item" data-project="embroidery">
+                            <span class="site-icon">🧵</span>
+                            <span class="site-text">
+                                <span class="site-name">维吾尔族刺绣</span>
+                                <span class="site-region">喀什地区</span>
+                            </span>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="site-item" data-project="dombra">
+                            <span class="site-icon">🎵</span>
+                            <span class="site-text">
+                                <span class="site-name">哈萨克族冬不拉艺术</span>
+                                <span class="site-region">伊犁哈萨克自治州</span>
+                            </span>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="site-item" data-project="atlas">
+                            <span class="site-icon">👘</span>
+                            <span class="site-text">
+                                <span class="site-name">艾德莱斯绸织造技艺</span>
+                                <span class="site-region">和田地区 · 洛浦</span>
+                            </span>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="site-item" data-project="carpet">
+                            <span class="site-icon">🧶</span>
+                            <span class="site-text">
+                                <span class="site-name">新疆地毯编织技艺</span>
+                                <span class="site-region">和田地区</span>
+                            </span>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="site-item" data-project="manas">
+                            <span class="site-icon">📜</span>
+                            <span class="site-text">
+                                <span class="site-name">《玛纳斯》史诗</span>
+                                <span class="site-region">克孜勒苏柯尔克孜自治州</span>
+                            </span>
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="site-detail" id="siteDetail">
+                    <p class="site-empty">点击地图标记或上方项目，查看该地区的非遗详情。</p>
+                </div>
+            </aside>
+        </div>
+
+        <div class="legend">
+            <span class="legend-item"><i class="legend-dot"></i>非遗项目分布点</span>
+            <span class="legend-item"><i class="legend-line"></i>地州边界</span>
+            <span class="legend-item">5 个项目 · 4 个代表性地区</span>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>📍 为什么是这几个地方</h2>
+        <ul class="knowledge-list">
+            <li><strong>喀什</strong>：维吾尔族刺绣的重要分布区之一，花帽、壁挂与服饰刺绣工艺精湛；刺绣还广泛流传于和田、阿克苏、吐鲁番等地。</li>
+            <li><strong>伊犁</strong>：哈萨克族冬不拉艺术的核心流传区，阿肯弹唱在这里世代相传。</li>
+            <li><strong>和田</strong>：同时是艾德莱斯绸与地毯两项技艺的核心产地——洛浦以艾德莱斯绸著称，和田地毯则以手工打结与天然植物染色闻名。</li>
+            <li><strong>克州</strong>：克孜勒苏柯尔克孜自治州是《玛纳斯》史诗的主要流传地，玛纳斯奇在此世代口头传唱。</li>
+        </ul>
+        <p class="desc map-source">非遗项目的流传范围往往跨越多个地区，图中标注的是最具代表性的分布点，不代表项目的全部流传区域。地图边界数据来源：阿里云 DataV.GeoAtlas 公开行政区划数据。</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    'use strict';
+
+    var PROJECTS = {
+        embroidery: {
+            name: '维吾尔族刺绣', icon: '🧵', site: 'kashgar',
+            desc: '喀什是维吾尔族刺绣的重要分布区之一。当地妇女自幼学习刺绣，花帽、壁挂与服饰刺绣色彩浓艳、纹样饱满，是绿洲文化的典型代表。',
+            href: '/?project=embroidery'
+        },
+        dombra: {
+            name: '哈萨克族冬不拉艺术', icon: '🎵', site: 'yining',
+            desc: '伊犁是冬不拉艺术的核心流传区。阿肯怀抱冬不拉即兴弹唱，曲目以「冬不拉奎依」的形式世代口耳相传，琴声与草原游牧生活紧密相连。',
+            href: '/?project=dombra'
+        },
+        atlas: {
+            name: '艾德莱斯绸织造技艺', icon: '👘', site: 'hotan',
+            desc: '和田洛浦县是著名的艾德莱斯绸之乡。扎经染色工艺世代传承，每匹绸图案独一无二，被誉为「布谷鸟的翅膀」。',
+            href: '/?project=atlas'
+        },
+        carpet: {
+            name: '新疆地毯编织技艺', icon: '🧶', site: 'hotan',
+            desc: '和田地毯以手工打结编织、天然植物染色著称，图案饱满繁密，被誉为「东方地毯的明珠」。',
+            href: '/?project=carpet'
+        },
+        manas: {
+            name: '《玛纳斯》史诗', icon: '📜', site: 'wuqia',
+            desc: '克州是《玛纳斯》史诗的主要流传地。玛纳斯奇在此世代口头传唱这部二十三万余行的宏大史诗，内容涵盖柯尔克孜族的历史、风俗与信仰。',
+            href: '/?project=manas'
+        }
+    };
+
+    var REGIONS = {
+        yining: '伊犁哈萨克自治州',
+        wuqia: '克孜勒苏柯尔克孜自治州',
+        kashgar: '喀什地区',
+        hotan: '和田地区'
+    };
+
+    var detail = document.getElementById('siteDetail');
+    var tip = document.getElementById('mapTip');
+    var stage = document.querySelector('.map-stage');
+    var siteGroups = Array.prototype.slice.call(document.querySelectorAll('.map-site'));
+    var listItems = Array.prototype.slice.call(document.querySelectorAll('.site-item'));
+
+    function clearActive() {
+        siteGroups.forEach(function (g) { g.classList.remove('active'); });
+        listItems.forEach(function (b) { b.classList.remove('active'); });
+    }
+
+    /* 选中某个项目：高亮地图点与列表项，渲染详情卡 */
+    function selectProject(key) {
+        var p = PROJECTS[key];
+        if (!p) { return; }
+
+        clearActive();
+
+        siteGroups.forEach(function (g) {
+            if (g.getAttribute('data-site') === p.site) { g.classList.add('active'); }
+        });
+        listItems.forEach(function (b) {
+            if (b.getAttribute('data-project') === key) { b.classList.add('active'); }
+        });
+
+        detail.innerHTML =
+            '<div class="detail-head">' +
+                '<span class="detail-icon">' + p.icon + '</span>' +
+                '<div>' +
+                    '<h4>' + p.name + '</h4>' +
+                    '<span class="detail-region">' + (REGIONS[p.site] || '') + '</span>' +
+                '</div>' +
+            '</div>' +
+            '<p>' + p.desc + '</p>' +
+            '<a class="detail-link" href="' + p.href + '">查看完整介绍 →</a>';
+    }
+
+    /* 点击地图标记：单项目直接选中，多项目列出供挑选 */
+    function selectSite(siteKey) {
+        var keys = Object.keys(PROJECTS).filter(function (k) {
+            return PROJECTS[k].site === siteKey;
+        });
+        if (!keys.length) { return; }
+
+        if (keys.length === 1) {
+            selectProject(keys[0]);
+            return;
+        }
+
+        clearActive();
+        siteGroups.forEach(function (g) {
+            if (g.getAttribute('data-site') === siteKey) { g.classList.add('active'); }
+        });
+
+        var html = '<div class="detail-head"><span class="detail-icon">📍</span><div>' +
+                   '<h4>' + (REGIONS[siteKey] || '') + '</h4>' +
+                   '<span class="detail-region">该地区有 ' + keys.length + ' 个代表性项目</span>' +
+                   '</div></div><div class="detail-links">';
+        keys.forEach(function (k) {
+            html += '<button type="button" class="detail-chip" data-jump="' + k + '">' +
+                    PROJECTS[k].icon + ' ' + PROJECTS[k].name + '</button>';
+        });
+        html += '</div>';
+        detail.innerHTML = html;
+
+        Array.prototype.forEach.call(detail.querySelectorAll('[data-jump]'), function (btn) {
+            btn.addEventListener('click', function () {
+                selectProject(btn.getAttribute('data-jump'));
+            });
+        });
+    }
+
+    listItems.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            selectProject(btn.getAttribute('data-project'));
+        });
+    });
+
+    siteGroups.forEach(function (g) {
+        var key = g.getAttribute('data-site');
+        g.addEventListener('click', function () { selectSite(key); });
+        g.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                selectSite(key);
+            }
+        });
+    });
+
+    /* 悬停地州显示名称 */
+    Array.prototype.forEach.call(document.querySelectorAll('.map-city'), function (path) {
+        path.addEventListener('mousemove', function (e) {
+            var box = stage.getBoundingClientRect();
+            tip.textContent = path.getAttribute('data-name') || '';
+            tip.style.left = (e.clientX - box.left + 14) + 'px';
+            tip.style.top = (e.clientY - box.top - 10) + 'px';
+            tip.classList.add('show');
+        });
+        path.addEventListener('mouseleave', function () {
+            tip.classList.remove('show');
+        });
+    });
+})();
+</script>
+{% endblock %}

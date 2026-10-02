@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}服务器出错 - 新疆非遗文化互动体验平台{% endblock %}
+
+{% block content %}
+<div class="container narrow">
+    <div class="card">
+        <div class="error-page">
+            <div class="code">500</div>
+            <h2>服务器出了点问题</h2>
+            <p>页面处理时发生错误，请稍后重试。<br>如果正在演示，建议检查终端中的报错信息。</p>
+            <a class="back-btn" href="{{ url_for('index') }}">返回首页</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

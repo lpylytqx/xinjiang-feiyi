@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="基于AIGC的新疆非遗文化互动体验平台：五个国家级非遗项目的图文与语音讲解、非遗分布地图、AI纹样生成、冬不拉互动弹奏、民族服饰展示、AI 民族换装、知识问答与纹样祈福。">
+    <title>{% block title %}新疆非遗文化互动体验平台{% endblock %}</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    {% set ep = request.endpoint %}
+    <div class="header">
+        <h1>新疆非遗文化互动体验平台</h1>
+        <p>探索新疆各民族非物质文化遗产之美</p>
+    </div>
+
+    <nav class="nav">
+        <a href="{{ url_for('index') }}"{% if ep == 'index' %} class="active"{% endif %}>非遗浏览</a>
+        <a href="{{ url_for('generator') }}"{% if ep == 'generator' %} class="active"{% endif %}>纹样生成器</a>
+        <a href="{{ url_for('instrument') }}"{% if ep == 'instrument' %} class="active"{% endif %}>冬不拉弹奏</a>
+        <a href="{{ url_for('quiz') }}"{% if ep == 'quiz' %} class="active"{% endif %}>知识问答</a>
+        <a href="{{ url_for('costumes') }}"{% if ep == 'costumes' %} class="active"{% endif %}>服饰展示</a>
+        <a href="{{ url_for('map') }}"{% if ep == 'map' %} class="active"{% endif %}>非遗地图</a>
+        <a href="{{ url_for('fortune') }}"{% if ep == 'fortune' %} class="active"{% endif %}>祈福抽签</a>
+        <a href="{{ url_for('tryon') }}"{% if ep == 'tryon' %} class="active"{% endif %}>AI换装</a>
+        <a href="{{ url_for('about') }}"{% if ep == 'about' %} class="active"{% endif %}>关于项目</a>
+    </nav>
+
+    {% block content %}{% endblock %}
+
+    <div class="footer">
+        本作品部分图片、文字、音频内容由AI辅助生成 · 仅供教学展示使用
+    </div>
+
+    <!-- 回到顶部按钮 -->
+    <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+    <script>
+        window.addEventListener('scroll', function() {
+            const btn = document.getElementById('backToTop');
+            if (window.scrollY > 300) {
+                btn.classList.add('show');
+            } else {
+                btn.classList.remove('show');
+            }
+        });
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
+
+
+

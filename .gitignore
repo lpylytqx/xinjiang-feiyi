@@ -1,0 +1,47 @@
+# ============================================================
+# 基于AIGC的新疆非遗文化互动体验平台 · Git 忽略规则
+# ============================================================
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+
+# ---- 虚拟环境 ----
+venv/
+env/
+.venv/
+ENV/
+
+# ---- 私密配置：含 API Key，绝不能提交 ----
+config_local.py
+.env
+
+# ---- 本地调试脚本 ----
+test_api.py
+test_kolors.py
+list_models.py
+
+# ---- 图片与音频素材（体积过大，不纳入版本库）----
+*.mp3
+*.jpg
+*.jpeg
+*.png
+
+# ---- 运行时产物 ----
+static/generated/
+
+# ---- 本地备份与工具目录 ----
+_backup_images/
+_backup_audio/
+.dsh-notes/
+.dsh-pyenv/
+
+# ---- 编辑器与系统 ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*.log

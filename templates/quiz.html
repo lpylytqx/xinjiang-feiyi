@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+{% block title %}非遗知识问答 - 新疆非遗文化互动体验平台{% endblock %}
+
+{% block content %}
+<div class="container narrow">
+    <div class="card">
+        <h2>📝 非遗知识小测验</h2>
+        <p class="desc">10 道选择题，覆盖本平台的五个非遗项目。答完一题会立即给出生或错的判断与解析，看看你对新疆非遗了解多少。</p>
+
+        <div class="quiz-rules">
+            <span class="rule-chip">共 10 题</span>
+            <span class="rule-chip">每题四个选项</span>
+            <span class="rule-chip">答后显示解析</span>
+            <span class="rule-chip">自动进入下一题</span>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress"></div>
+        </div>
+
+        <div id="quiz-area">
+            <div class="question-num" id="q-num"></div>
+            <div class="question-text" id="q-text"></div>
+            <div class="options" id="options"></div>
+            <div class="explanation" id="explanation">
+                <h4 id="exp-title"></h4>
+                <p id="exp-text"></p>
+            </div>
+        </div>
+
+        <div class="result-screen" id="result-screen" style="display:none;">
+            <h3>测验完成！</h3>
+            <div class="score" id="score"></div>
+            <p id="result-comment"></p>
+            <div class="grade-list" id="grade-list"></div>
+            <button type="button" class="restart-btn" id="restart-btn">重新测一次</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>💡 答不上来怎么办</h2>
+        <p class="desc">这几道题的答案都能在本平台里找到出处。</p>
+        <ul class="knowledge-list">
+            <li>到「非遗浏览」逐个看五个项目的图文与语音讲解，文化简介、工艺特点两段里藏着大部分答案。</li>
+            <li>留意每个项目页下方的「非遗小知识」，那里讲的多是题目的考点。</li>
+            <li>不确定的项目名、民族名、产地名，是这类题目最容易混淆的地方，可以对照着记。</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    'use strict';
+
+    var questions = [
+        {
+            q: "维吾尔族刺绣主要不用于以下哪种物品？",
+            options: ["服饰", "壁挂", "汽车外壳", "枕套"],
+            answer: 2,
+            explain: "维吾尔族刺绣多用于服饰、壁挂、枕套等生活用品，不是工业产品。"
+        },
+        {
+            q: "冬不拉是哪个民族的传统乐器？",
+            options: ["维吾尔族", "哈萨克族", "柯尔克孜族", "汉族"],
+            answer: 1,
+            explain: "冬不拉是哈萨克族的代表性弹拨乐器，阿肯们用它即兴弹唱。"
+        },
+        {
+            q: "冬不拉的传统形制通常是几根弦？",
+            options: ["一根", "两根", "三根", "四根"],
+            answer: 1,
+            explain: "传统冬不拉以两根弦为主，也有三弦、四弦等变体。"
+        },
+        {
+            q: "艾德莱斯绸主要产自新疆哪个地区？",
+            options: ["喀什", "和田、洛浦", "乌鲁木齐", "阿勒泰"],
+            answer: 1,
+            explain: "艾德莱斯绸主要产于新疆和田、洛浦一带，被誉为「布谷鸟的翅膀」。"
+        },
+        {
+            q: "艾德莱斯绸的图案是怎么形成的？",
+            options: ["印染时印上去的", "先把经线扎结染色，再上机织造", "织完后再手绘", "机器打印的"],
+            answer: 1,
+            explain: "艾德莱斯绸采用扎经染色法：先扎结经线染色，再上机织造，因此每匹图案都独一无二。"
+        },
+        {
+            q: "新疆地毯编织主要用什么原料？",
+            options: ["棉花", "羊毛", "蚕丝", "化纤"],
+            answer: 1,
+            explain: "新疆地毯以羊毛为主要原料，手工打结编织，采用天然植物染色。"
+        },
+        {
+            q: "《玛纳斯》是哪个民族的英雄史诗？",
+            options: ["维吾尔族", "哈萨克族", "柯尔克孜族", "蒙古族"],
+            answer: 2,
+            explain: "《玛纳斯》是柯尔克孜族的英雄史诗，由「玛纳斯奇」口耳相传。"
+        },
+        {
+            q: "《玛纳斯》与哪两部史诗并称中国三大英雄史诗？",
+            options: ["《格萨尔》《江格尔》", "《诗经》《楚辞》", "《伊利亚特》《奥德赛》", "《江格尔》《福乐智慧》"],
+            answer: 0,
+            explain: "《玛纳斯》与藏族的《格萨尔》、蒙古族的《江格尔》并称中国三大英雄史诗。"
+        },
+        {
+            q: "维吾尔族的传统花帽又被称为什么？",
+            options: ["朵帕", "卡尔帕克", "坎肩", "马靴"],
+            answer: 0,
+            explain: "维吾尔族花帽称「朵帕」，上面绣满花卉、瓜果纹样；卡尔帕克则是柯尔克孜族的白毡帽。"
+        },
+        {
+            q: "柯尔克孜族最具标志性的头饰是什么？",
+            options: ["四角花帽", "白色毡帽（卡尔帕克）", "皮毛帽子", "绣花头巾"],
+            answer: 1,
+            explain: "柯尔克孜族服饰以白色毡帽（卡尔帕克）为标志，帽檐镶黑绒，帽身绣有花纹。"
+        }
+    ];
+
+    var current = 0;
+    var score = 0;
+    var locked = false;          // 防止同一题被重复点击刷分
+
+    var qNumEl = document.getElementById('q-num');
+    var qTextEl = document.getElementById('q-text');
+    var optionsEl = document.getElementById('options');
+    var progressEl = document.getElementById('progress');
+    var explEl = document.getElementById('explanation');
+    var expTitleEl = document.getElementById('exp-title');
+    var expTextEl = document.getElementById('exp-text');
+    var quizArea = document.getElementById('quiz-area');
+    var resultScreen = document.getElementById('result-screen');
+
+    function setProgress(answered) {
+        progressEl.style.width = (answered / questions.length * 100) + '%';
+    }
+
+    function loadQuestion() {
+        locked = false;
+        var q = questions[current];
+
+        qNumEl.textContent = '第 ' + (current + 1) + ' / ' + questions.length + ' 题';
+        qTextEl.textContent = q.q;
+        setProgress(current);
+
+        optionsEl.innerHTML = '';
+        optionsEl.classList.remove('locked');
+        q.options.forEach(function (opt, i) {
+            var div = document.createElement('div');
+            div.className = 'option';
+            div.textContent = opt;
+            div.addEventListener('click', function () { selectAnswer(i); });
+            optionsEl.appendChild(div);
+        });
+
+        explEl.classList.remove('show');
+    }
+
+    function selectAnswer(i) {
+        if (locked) { return; }        // 已作答，忽略后续点击
+        locked = true;
+        optionsEl.classList.add('locked');
+
+        var q = questions[current];
+        var options = optionsEl.querySelectorAll('.option');
+
+        if (i === q.answer) {
+            options[i].classList.add('correct');
+            score++;
+        } else {
+            options[i].classList.add('wrong');
+            options[q.answer].classList.add('correct');
+        }
+
+        setProgress(current + 1);
+        expTitleEl.textContent = (i === q.answer) ? '✅ 回答正确！' : '❌ 回答错误';
+        expTextEl.textContent = q.explain;
+        explEl.classList.add('show');
+
+        setTimeout(function () {
+            current++;
+            if (current < questions.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }, 2200);
+    }
+
+    function gradeOf(score, total) {
+        var ratio = score / total;
+        if (ratio === 1) {
+            return { level: '非遗达人', note: '全部答对，你对新疆非遗的了解相当扎实。' };
+        } else if (ratio >= 0.8) {
+            return { level: '熟悉', note: '只错了少数几处，再补一补细节就满分了。' };
+        } else if (ratio >= 0.6) {
+            return { level: '入门', note: '基本了解已经建立，建议再翻一翻项目详情页。' };
+        } else if (ratio >= 0.3) {
+            return { level: '初识', note: '还有不少可以探索的地方，从「非遗浏览」开始吧。' };
+        }
+        return { level: '新朋友', note: '欢迎第一次接触新疆非遗，慢慢看会有惊喜。' };
+    }
+
+    function showResult() {
+        quizArea.style.display = 'none';
+        setProgress(questions.length);
+        resultScreen.style.display = 'block';
+        document.getElementById('score').textContent = score + ' / ' + questions.length;
+
+        var g = gradeOf(score, questions.length);
+        document.getElementById('result-comment').textContent =
+            '评级：' + g.level + ' —— ' + g.note;
+
+        var gradeList = document.getElementById('grade-list');
+        gradeList.innerHTML = '';
+        [
+            ['10 题全对', '非遗达人'],
+            ['8 — 9 题', '熟悉'],
+            ['6 — 7 题', '入门'],
+            ['3 — 5 题', '初识'],
+            ['0 — 2 题', '新朋友']
+        ].forEach(function (row) {
+            var span = document.createElement('span');
+            span.className = 'grade-chip' + (row[1] === g.level ? ' current' : '');
+            span.textContent = row[0] + ' · ' + row[1];
+            gradeList.appendChild(span);
+        });
+    }
+
+    function restart() {
+        current = 0;
+        score = 0;
+        locked = false;
+        quizArea.style.display = 'block';
+        resultScreen.style.display = 'none';
+        loadQuestion();
+    }
+
+    document.getElementById('restart-btn').addEventListener('click', restart);
+
+    loadQuestion();
+})();
+</script>
+{% endblock %}

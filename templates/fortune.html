@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}非遗纹样祈福 - 新疆非遗文化互动体验平台{% endblock %}
+
+{% block content %}
+<div class="container narrow">
+    <div class="card fortune-card">
+        <h2>🎋 非遗纹样祈福</h2>
+        <p class="desc">抽取一枚新疆民族纹样，看看它承载的寓意与今日指引。每一签对应一种真实的民族纹样母题。</p>
+
+        <div class="draw-area">
+            <button type="button" class="draw-btn" id="draw-btn">✨ 点击抽签</button>
+        </div>
+
+        <div class="result-card" id="result">
+            <img src="" alt="抽到的纹样" class="pattern-img" id="patternImg">
+            <h3 id="patternName"></h3>
+            <p class="meaning" id="patternMeaning"></p>
+            <p class="lucky" id="luckyColor"></p>
+            <button type="button" class="again-btn" id="again-btn">再抽一次</button>
+        </div>
+
+        <p class="fortune-note">签文为趣味解读，纹样图案由 AI 辅助生成，不作为任何预测依据。</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    'use strict';
+
+    var fortunes = [
+        {
+            name: "石榴花纹样",
+            img: "{{ url_for('static', filename='images/pattern_emb3.jpg') }}",
+            meaning: "石榴在新疆各民族纹样中是常见的母题，寓意多子多福、家族兴旺。今日的你灵感旺盛，想到什么好点子就大胆去做。",
+            lucky: "幸运色：石榴红"
+        },
+        {
+            name: "玫瑰刺绣纹样",
+            img: "{{ url_for('static', filename='images/pattern_emb1.jpg') }}",
+            meaning: "花卉是维吾尔族刺绣最常见的题材，玫瑰常用来表达美好与情谊。今日人际关系顺利，适合把心意说出来。",
+            lucky: "幸运色：玫瑰粉"
+        },
+        {
+            name: "巴旦木花纹",
+            img: "{{ url_for('static', filename='images/pattern_emb2.jpg') }}",
+            meaning: "巴旦木（扁桃）是新疆传统的装饰母题，象征坚韧与生命力。今天遇到的小困难都是暂时的，坚持一下就能看到转机。",
+            lucky: "幸运色：大地棕"
+        },
+        {
+            name: "艾德莱斯绸纹",
+            img: "{{ url_for('static', filename='images/pattern_atlas1.jpg') }}",
+            meaning: "艾德莱斯绸的图案由扎经染色形成，无法复制，象征精彩与变化。今天可能会有小惊喜出现，保持开放心态。",
+            lucky: "幸运色：宝石蓝"
+        },
+        {
+            name: "地毯团花纹",
+            img: "{{ url_for('static', filename='images/pattern_carp1.jpg') }}",
+            meaning: "团花与多层边框是新疆地毯的典型构图，讲究对称与饱满，给人以稳定感。今天适合整理内务、规划未来。",
+            lucky: "幸运色：酒红色"
+        },
+        {
+            name: "几何菱形纹",
+            img: "{{ url_for('static', filename='images/pattern_atlas2.jpg') }}",
+            meaning: "菱形与波浪是艾德莱斯绸上最典型的几何母题，代表方向与抉择。今天如果面临选择，相信第一直觉。",
+            lucky: "幸运色：暖橙色"
+        }
+    ];
+
+    var resultEl = document.getElementById('result');
+    var imgEl = document.getElementById('patternImg');
+    var nameEl = document.getElementById('patternName');
+    var meaningEl = document.getElementById('patternMeaning');
+    var luckyEl = document.getElementById('luckyColor');
+    var lastIndex = -1;
+
+    function draw() {
+        var i = Math.floor(Math.random() * fortunes.length);
+        // 避免连续抽到同一签，体验上更像"抽"出来的
+        if (fortunes.length > 1) {
+            var guard = 0;
+            while (i === lastIndex && guard < 10) {
+                i = Math.floor(Math.random() * fortunes.length);
+                guard++;
+            }
+        }
+        lastIndex = i;
+
+        var f = fortunes[i];
+        imgEl.src = f.img;
+        imgEl.alt = f.name;
+        nameEl.textContent = f.name;
+        meaningEl.textContent = f.meaning;
+        luckyEl.textContent = f.lucky;
+
+        // 重新触发入场动画
+        resultEl.classList.remove('show');
+        void resultEl.offsetWidth;
+        resultEl.classList.add('show');
+    }
+
+    document.getElementById('draw-btn').addEventListener('click', draw);
+    document.getElementById('again-btn').addEventListener('click', draw);
+})();
+</script>
+{% endblock %}

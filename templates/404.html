@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}页面未找到 - 新疆非遗文化互动体验平台{% endblock %}
+
+{% block content %}
+<div class="container narrow">
+    <div class="card">
+        <div class="error-page">
+            <div class="code">404</div>
+            <h2>没有找到这个页面</h2>
+            <p>你要访问的地址不存在，可能是链接输入有误，或者页面已经调整。<br>回首页继续探索新疆非遗吧。</p>
+            <a class="back-btn" href="{{ url_for('index') }}">返回首页</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

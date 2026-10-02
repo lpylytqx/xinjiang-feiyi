@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% block title %}冬不拉互动弹奏 - 新疆非遗文化互动体验平台{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <h2>🎵 冬不拉互动弹奏</h2>
+        <p class="desc">冬不拉是哈萨克族传统弹拨乐器。点击下方琴钮，试试亲手弹出一段旋律。</p>
+
+        <div class="instrument-area">
+            <img src="{{ url_for('static', filename='images/dombra.jpg') }}" alt="冬不拉" loading="lazy">
+        </div>
+
+        <div class="strings">
+            <button type="button" class="string-btn" data-note="1">低音</button>
+            <button type="button" class="string-btn" data-note="3">中音</button>
+            <button type="button" class="string-btn" data-note="2">高音</button>
+        </div>
+
+        <div class="melody-section">
+            <h3>🎼 试试演奏预设旋律</h3>
+            <div class="melody-btns">
+                <button type="button" class="melody-btn" data-type="1" data-name="草原之歌">草原之歌</button>
+                <button type="button" class="melody-btn" data-type="2" data-name="思乡曲">思乡曲</button>
+                <button type="button" class="melody-btn" data-type="3" data-name="欢乐的跳步">欢乐的跳步</button>
+                <button type="button" class="melody-btn" id="stop-btn">■ 停止</button>
+            </div>
+            <div class="playback-status" id="status"></div>
+        </div>
+
+        <div class="tip">
+            💡 小提示：上方三个琴钮分别对应低、中、高三个音，点击即可发声；连续点击会自动打断上一段旋律。
+            本页的琴钮用于体验节奏与旋律的组合，真实冬不拉的音色与技法比这丰富得多。
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>📚 认识冬不拉</h2>
+        <p class="desc">冬不拉艺术不只是"一件乐器"，它包含乐曲、弹唱、舞蹈音乐、演奏技巧与制作工艺等多个部分。</p>
+
+        {% for k in knowledge %}
+        <div class="knowledge-block">
+            <h3>{{ k.icon }} {{ k.title }}</h3>
+            <ul class="knowledge-list">
+                {% for it in k.points %}
+                <li>{{ it }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<audio id="note1" src="{{ url_for('static', filename='audio/note1.mp3') }}" preload="auto"></audio>
+<audio id="note2" src="{{ url_for('static', filename='audio/note2.mp3') }}" preload="auto"></audio>
+<audio id="note3" src="{{ url_for('static', filename='audio/note3.mp3') }}" preload="auto"></audio>
+
+<script>
+(function () {
+    'use strict';
+
+    var MELODIES = {
+        1: [1, 3, 2, 3, 1, 3, 2, 1],
+        2: [3, 2, 1, 2, 3, 3, 2, 1],
+        3: [1, 1, 2, 3, 3, 2, 1, 2]
+    };
+    var NOTE_INTERVAL = 400;
+
+    var timers = [];
+    var statusEl = document.getElementById('status');
+    var melodyBtns = Array.prototype.slice.call(document.querySelectorAll('.melody-btn[data-type]'));
+
+    function setStatus(text) {
+        statusEl.textContent = text;
+    }
+
+    function stopMelody(resetStatus) {
+        timers.forEach(clearTimeout);
+        timers = [];
+        melodyBtns.forEach(function (b) { b.classList.remove('active'); });
+        if (resetStatus) { setStatus(''); }
+    }
+
+    function playNote(n) {
+        var audio = document.getElementById('note' + n);
+        if (!audio) { return; }
+        try { audio.currentTime = 0; } catch (e) { /* 尚未加载完成时忽略 */ }
+        var p = audio.play();
+        if (p && typeof p.catch === 'function') {
+            p.catch(function () {
+                setStatus('浏览器拦截了播放，请先点击页面任意位置再试一次。');
+            });
+        }
+    }
+
+    function playMelody(type) {
+        stopMelody(true);
+
+        var sequence = MELODIES[type];
+        if (!sequence) { return; }
+
+        var btn = document.querySelector('.melody-btn[data-type="' + type + '"]');
+        var name = btn ? btn.getAttribute('data-name') : '旋律';
+        if (btn) { btn.classList.add('active'); }
+
+        sequence.forEach(function (note, i) {
+            timers.push(setTimeout(function () {
+                playNote(note);
+                setStatus('正在播放：' + name + '（' + (i + 1) + '/' + sequence.length + '）');
+            }, i * NOTE_INTERVAL));
+        });
+
+        timers.push(setTimeout(function () {
+            stopMelody(false);
+            setStatus('《' + name + '》播放完毕');
+        }, sequence.length * NOTE_INTERVAL + 600));
+    }
+
+    melodyBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            playMelody(Number(btn.getAttribute('data-type')));
+        });
+    });
+
+    document.getElementById('stop-btn').addEventListener('click', function () {
+        stopMelody(true);
+        setStatus('已停止');
+    });
+
+    Array.prototype.forEach.call(document.querySelectorAll('.string-btn'), function (btn) {
+        btn.addEventListener('click', function () {
+            stopMelody(true);
+            playNote(Number(btn.getAttribute('data-note')));
+        });
+    });
+})();
+</script>
+{% endblock %}

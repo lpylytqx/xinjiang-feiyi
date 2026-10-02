@@ -1,0 +1,169 @@
+﻿{% extends "base.html" %}
+{% block title %}{% if data %}{{ data.name }}{% else %}非遗浏览{% endif %} - 新疆非遗文化互动体验平台{% endblock %}
+
+{% block content %}
+<div class="container split">
+    <div class="sidebar">
+        <h3>非遗项目</h3>
+        {% for item in project_list %}
+        <form method="get" action="{{ url_for('index') }}">
+            <button type="submit" name="project" value="{{ item.key }}"
+                    class="project-btn{% if selected == item.key %} active{% endif %}">
+                {{ item.icon }} {{ item.label }}
+            </button>
+        </form>
+        {% endfor %}
+    </div>
+
+    <div class="main-content">
+        {% if data %}
+        <h2 class="content-title">{{ data.name }}</h2>
+
+        {% if data.tags %}
+        <div class="tag-list">
+            {% for t in data.tags %}<span class="tag">{{ t }}</span>{% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="section">
+            <h4>文化简介</h4>
+            <p>{{ data.intro }}</p>
+        </div>
+
+        <div class="section">
+            <h4>历史源流</h4>
+            <p>{{ data.history }}</p>
+        </div>
+
+        <div class="section">
+            <h4>工艺特点</h4>
+            <p>{{ data.craft }}</p>
+        </div>
+
+        <div class="section">
+            <h4>文化价值</h4>
+            <p>{{ data.value }}</p>
+        </div>
+
+        <div class="section">
+            <h4>分布地区</h4>
+            <p>{{ data.region }}</p>
+        </div>
+
+        <div class="section">
+            <h4>代表作品</h4>
+            <p>{{ data.representative }}</p>
+        </div>
+
+        <div class="img-box">
+            <img src="{{ data.img }}" alt="{{ data.name }}" loading="lazy">
+            <p class="img-caption">{{ data.name }} · 图片由 AI 辅助生成</p>
+        </div>
+
+        {% if data.patterns %}
+        <div class="pattern-gallery">
+            <h4>相关纹样</h4>
+            <p class="gallery-desc">以下纹样由 AI 辅助生成，供理解该项目的典型图案与配色参考。</p>
+            <div class="pattern-grid">
+                {% for p in data.patterns %}
+                <img src="{{ p }}" alt="{{ data.name }}典型纹样 {{ loop.index }}" loading="lazy">
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="audio-box">
+            <h4>语音讲解</h4>
+            <audio controls preload="metadata">
+                <source src="{{ data.audio }}" type="audio/mpeg">
+                您的浏览器不支持音频播放，请<a href="{{ data.audio }}">点此下载收听</a>。
+            </audio>
+        </div>
+
+        {% if data.timeline %}
+        <div class="timeline">
+            <h4>纹样演变时间线</h4>
+            <ul class="timeline-list">
+                {% for t in data.timeline %}
+                <li>
+                    <strong>{{ t.period }}</strong>
+                    {{ t.desc }}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if data.tip %}
+        <div class="knowledge-note">
+            <h4>💡 非遗小知识</h4>
+            <p>{{ data.tip }}</p>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="welcome-hero">
+            <div class="hero-overlay">
+                <h2>欢迎来到新疆非遗文化互动体验平台</h2>
+                <p>探索新疆各民族非物质文化遗产之美</p>
+            </div>
+        </div>
+
+        <div class="welcome-cards">
+            <a class="welcome-card" href="{{ url_for('generator') }}">
+                <div class="wc-icon">🎨</div>
+                <h4>纹样生成</h4>
+                <p>输入关键词生成民族纹样</p>
+            </a>
+            <a class="welcome-card" href="{{ url_for('instrument') }}">
+                <div class="wc-icon">🎵</div>
+                <h4>乐器互动</h4>
+                <p>亲手弹一段冬不拉</p>
+            </a>
+            <a class="welcome-card" href="{{ url_for('costumes') }}">
+                <div class="wc-icon">👘</div>
+                <h4>民族服饰</h4>
+                <p>看各民族传统服饰</p>
+            </a>
+            <a class="welcome-card" href="{{ url_for('quiz') }}">
+                <div class="wc-icon">📝</div>
+                <h4>知识测验</h4>
+                <p>检验你的了解程度</p>
+            </a>
+            <a class="welcome-card" href="{{ url_for('fortune') }}">
+                <div class="wc-icon">🎋</div>
+                <h4>祈福抽签</h4>
+                <p>抽个纹样看今日运势</p>
+            </a>
+        </div>
+
+        <!-- 数字统计 -->
+        <div class="stats-row">
+            <div class="stat-item">
+                <div class="stat-num">5</div>
+                <div class="stat-label">国家级非遗项目</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">9</div>
+                <div class="stat-label">互动体验功能</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">5</div>
+                <div class="stat-label">语音讲解音频</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">20+</div>
+                <div class="stat-label">AI生成素材</div>
+            </div>
+        </div>
+
+        <div class="welcome-text">
+            <p>请从左侧选择一个非遗项目，查看图文与语音讲解；也可以从上方入口进入互动体验。</p>
+            <p class="welcome-sub">本平台收录维吾尔族刺绣、哈萨克族冬不拉艺术、艾德莱斯绸织造技艺、新疆地毯编织技艺与《玛纳斯》史诗五个国家级非遗项目。</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+

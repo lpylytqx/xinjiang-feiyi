@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block title %}民族服饰展示 - 新疆非遗文化互动体验平台{% endblock %}
+
+{% block content %}
+<div class="container mid">
+    <div class="page-title">
+        <h2>👘 新疆民族服饰展示</h2>
+        <p>点击卡片查看详细介绍；页面下方还有常见服饰元素图鉴</p>
+    </div>
+
+    <div class="intro-note">
+        <p>服饰是识别一个民族最直观的外在标志之一。新疆各民族在长期的生产生活中，根据气候、牧场与绿洲环境形成了各具特色的衣着样式：维吾尔族服饰讲究色彩与刺绣，哈萨克族、柯尔克孜族服饰则更多保留了游牧生活的痕迹——皮毛、毡、皮革与马靴。</p>
+        <p>本页展示的三个民族服饰均由 AI 辅助生成图像，用于呈现典型的款式与配色特征。</p>
+    </div>
+
+    <div class="costume-grid">
+        <div class="costume-card" data-index="0" tabindex="0" role="button" aria-label="查看维吾尔族服饰详细介绍">
+            <img src="{{ url_for('static', filename='images/costume_uyghur.jpg') }}" alt="维吾尔族服饰" loading="lazy">
+            <div class="costume-info">
+                <h3>维吾尔族服饰</h3>
+                <p>艾德莱斯绸连衣裙，小花帽，色彩绚丽</p>
+            </div>
+        </div>
+
+        <div class="costume-card" data-index="1" tabindex="0" role="button" aria-label="查看哈萨克族服饰详细介绍">
+            <img src="{{ url_for('static', filename='images/costume_kazakh.jpg') }}" alt="哈萨克族服饰" loading="lazy">
+            <div class="costume-info">
+                <h3>哈萨克族服饰</h3>
+                <p>皮毛帽子，刺绣长袍，草原游牧风格</p>
+            </div>
+        </div>
+
+        <div class="costume-card" data-index="2" tabindex="0" role="button" aria-label="查看柯尔克孜族服饰详细介绍">
+            <img src="{{ url_for('static', filename='images/costume_kirgiz.jpg') }}" alt="柯尔克孜族服饰" loading="lazy">
+            <div class="costume-info">
+                <h3>柯尔克孜族服饰</h3>
+                <p>白色毡帽，花卉刺绣，游牧民族特色</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mid">
+    <div class="card">
+        <h2>🧩 常见服饰元素图鉴</h2>
+        <p class="desc">这些元素常出现在新疆各民族的日常服饰与节庆装扮中，也是辨别服饰风格的几个关键点。</p>
+        <div class="element-grid">
+            {% for e in elements %}
+            <div class="element-card">
+                <div class="element-icon">{{ e.icon }}</div>
+                <h4>{{ e.name }}</h4>
+                <p>{{ e.desc }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="detail-modal" id="modal" role="dialog" aria-modal="true" aria-label="服饰详细介绍">
+    <div class="detail-content">
+        <button type="button" class="close-btn" id="close-btn" aria-label="关闭">&times;</button>
+        <div class="detail-img" id="modal-img"></div>
+        <div class="detail-text" id="modal-text"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    'use strict';
+
+    var costumes = [
+        {
+            img: "{{ url_for('static', filename='images/costume_uyghur.jpg') }}",
+            name: "维吾尔族服饰",
+            intro: "维吾尔族服饰风格鲜明，女性多穿艾德莱斯绸连衣裙，梳长辫，戴小花帽（朵帕）。男性穿长袍，戴四角花帽。",
+            craft: "艾德莱斯绸采用扎经染色工艺，每匹图案独一无二。花帽上的刺绣纹样多为花卉、瓜果图案。",
+            value: "维吾尔族服饰体现了绿洲农耕文化与丝绸之路贸易的融合，是民族审美与工艺的结晶。"
+        },
+        {
+            img: "{{ url_for('static', filename='images/costume_kazakh.jpg') }}",
+            name: "哈萨克族服饰",
+            intro: "哈萨克族服饰适应游牧生活，男性多穿刺绣长袍，戴皮毛帽子，脚蹬马靴。女性穿连衣裙，配刺绣坎肩。",
+            craft: "服饰多用皮毛、皮革、羊毛制作，刺绣纹样多为动物纹、几何纹，适合骑马和寒冷气候。",
+            value: "哈萨克族服饰是草原游牧文化的缩影，体现了人与自然环境的适应与和谐。"
+        },
+        {
+            img: "{{ url_for('static', filename='images/costume_kirgiz.jpg') }}",
+            name: "柯尔克孜族服饰",
+            intro: "柯尔克孜族服饰以白色毡帽（卡尔帕克）为标志，男女都穿刺绣长袍，纹样多为花卉和几何图案。",
+            craft: "白色毡帽用羊毛毡制作，帽檐镶黑绒，帽身绣有精美花纹。长袍上的刺绣色彩鲜艳，针法细腻。",
+            value: "柯尔克孜族服饰与《玛纳斯》史诗文化紧密相连，是游牧民族文化的重要载体。"
+        }
+    ];
+
+    var modal = document.getElementById('modal');
+    var modalImg = document.getElementById('modal-img');
+    var modalText = document.getElementById('modal-text');
+    var lastFocused = null;
+
+    function showDetail(i) {
+        var c = costumes[i];
+        if (!c) { return; }
+
+        lastFocused = document.activeElement;
+
+        var img = document.createElement('img');
+        img.src = c.img;
+        img.alt = c.name;
+        modalImg.innerHTML = '';
+        modalImg.appendChild(img);
+
+        modalText.innerHTML = '';
+        [
+            ['h3', c.name],
+            ['h4', '服饰特点'],
+            ['p', c.intro],
+            ['h4', '工艺特色'],
+            ['p', c.craft],
+            ['h4', '文化价值'],
+            ['p', c.value]
+        ].forEach(function (pair) {
+            var el = document.createElement(pair[0]);
+            el.textContent = pair[1];
+            modalText.appendChild(el);
+        });
+
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        document.getElementById('close-btn').focus();
+    }
+
+    function closeModal() {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+        if (lastFocused && typeof lastFocused.focus === 'function') {
+            lastFocused.focus();
+        }
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll('.costume-card'), function (card) {
+        var index = Number(card.getAttribute('data-index'));
+        card.addEventListener('click', function () { showDetail(index); });
+        card.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                showDetail(index);
+            }
+        });
+    });
+
+    document.getElementById('close-btn').addEventListener('click', closeModal);
+
+    // 点击遮罩空白处关闭
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) { closeModal(); }
+    });
+
+    // Esc 关闭
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && modal.classList.contains('show')) { closeModal(); }
+    });
+})();
+</script>
+{% endblock %}

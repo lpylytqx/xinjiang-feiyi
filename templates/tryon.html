@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+{% block title %}AI民族换装 - 新疆非遗文化互动体验平台{% endblock %}
+
+{% block content %}
+<div class="container mid">
+    <div class="card">
+        <h2>👗 AI 民族换装</h2>
+        <p class="desc">上传一张正面清晰的照片，选择想穿的民族服饰，AI 会在尽量保留你面部特征的前提下为你换装。</p>
+
+        <div class="step">
+            <h3>第一步：上传你的照片</h3>
+            <div class="upload-area" id="uploadArea" tabindex="0" role="button" aria-label="选择照片">
+                <div class="upload-icon">📷</div>
+                <p>点击这里选择照片</p>
+                <p class="upload-hint">建议正面半身照，光线充足、五官清晰</p>
+            </div>
+            <input type="file" id="fileInput" accept="image/*" hidden>
+            <img id="previewImg" class="preview-img" alt="已选择的照片预览" hidden>
+        </div>
+
+        <div class="step">
+            <h3>第二步：选择想穿的民族服饰</h3>
+            <div class="costume-options">
+                <div class="costume-option selected" data-costume="uyghur" tabindex="0" role="button">
+                    <img src="{{ url_for('static', filename='images/costume_uyghur.jpg') }}" alt="维吾尔族服饰" loading="lazy">
+                    <h4>维吾尔族服饰</h4>
+                    <p>艾德莱斯绸连衣裙 · 小花帽</p>
+                </div>
+                <div class="costume-option" data-costume="kazakh" tabindex="0" role="button">
+                    <img src="{{ url_for('static', filename='images/costume_kazakh.jpg') }}" alt="哈萨克族服饰" loading="lazy">
+                    <h4>哈萨克族服饰</h4>
+                    <p>刺绣长袍 · 皮毛镶边帽</p>
+                </div>
+                <div class="costume-option" data-costume="kirgiz" tabindex="0" role="button">
+                    <img src="{{ url_for('static', filename='images/costume_kirgiz.jpg') }}" alt="柯尔克孜族服饰" loading="lazy">
+                    <h4>柯尔克孜族服饰</h4>
+                    <p>刺绣长袍 · 白色毡帽</p>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="generate-btn" id="generateBtn">✨ 一键生成换装效果</button>
+
+        <div class="result-area" id="resultArea" hidden>
+            <div class="loading" id="loading" hidden>
+                <div class="spinner" aria-hidden="true"></div>
+                <p>AI 正在为你换装…</p>
+                <p class="loading-hint">通常需要 10—40 秒，请勿关闭页面</p>
+            </div>
+
+            <div class="compare" id="compareResult" hidden>
+                <div class="compare-item">
+                    <h4>你的照片</h4>
+                    <img id="originalImg" alt="上传的原图">
+                </div>
+                <div class="compare-item">
+                    <h4 id="resultLabel">换装效果</h4>
+                    <img id="resultImg" alt="换装后的效果图">
+                </div>
+            </div>
+
+            <p class="result-note" id="resultNote"></p>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>💡 使用提示</h2>
+        <ul class="knowledge-list">
+            <li>照片仅用于本次生成，服务器不会保存原图；图片会发送至 AI 服务商用于生成换装效果，请勿上传包含隐私信息的照片。</li>
+            <li>AI 会尽量保留面部特征，但服饰细节每次生成略有差异，这是生成式模型的正常表现。</li>
+            <li>若未配置 API Key、网络不可用或接口调用失败，页面会自动切换到<strong>演示模式</strong>，展示该民族服饰的参考素材，演示不会中断。</li>
+            <li>生成结果由 AI 辅助生成，页面页脚已按规范标注。</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    'use strict';
+
+    var fileInput = document.getElementById('fileInput');
+    var uploadArea = document.getElementById('uploadArea');
+    var previewImg = document.getElementById('previewImg');
+    var generateBtn = document.getElementById('generateBtn');
+    var resultArea = document.getElementById('resultArea');
+    var loading = document.getElementById('loading');
+    var compareResult = document.getElementById('compareResult');
+    var originalImg = document.getElementById('originalImg');
+    var resultImg = document.getElementById('resultImg');
+    var resultLabel = document.getElementById('resultLabel');
+    var resultNote = document.getElementById('resultNote');
+
+    var uploadedDataUrl = '';
+    var selectedCostume = 'uyghur';
+    var busy = false;
+
+    /* 压缩到长边 1024 以内，控制 base64 体积，避免请求体过大 */
+    function compress(file) {
+        return new Promise(function (resolve, reject) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var img = new Image();
+                img.onload = function () {
+                    var max = 1024;
+                    var w = img.width;
+                    var h = img.height;
+                    if (Math.max(w, h) > max) {
+                        var ratio = max / Math.max(w, h);
+                        w = Math.round(w * ratio);
+                        h = Math.round(h * ratio);
+                    }
+                    var canvas = document.createElement('canvas');
+                    canvas.width = w;
+                    canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    resolve(canvas.toDataURL('image/jpeg', 0.85));
+                };
+                img.onerror = function () { reject(new Error('图片解析失败，请换一张试试')); };
+                img.src = e.target.result;
+            };
+            reader.onerror = function () { reject(new Error('文件读取失败')); };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    uploadArea.addEventListener('click', function () { fileInput.click(); });
+    uploadArea.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+    });
+
+    fileInput.addEventListener('change', function () {
+        var file = fileInput.files && fileInput.files[0];
+        if (!file) { return; }
+        if (!/^image\//.test(file.type)) {
+            alert('请选择图片文件');
+            return;
+        }
+        compress(file).then(function (dataUrl) {
+            uploadedDataUrl = dataUrl;
+            previewImg.src = dataUrl;
+            previewImg.hidden = false;
+            uploadArea.querySelector('p').textContent = '已选择照片，点击可重新选择';
+        }).catch(function (err) {
+            alert(err.message);
+        });
+    });
+
+    Array.prototype.forEach.call(document.querySelectorAll('.costume-option'), function (el) {
+        function pick() {
+            document.querySelectorAll('.costume-option').forEach(function (o) {
+                o.classList.remove('selected');
+            });
+            el.classList.add('selected');
+            selectedCostume = el.getAttribute('data-costume');
+        }
+        el.addEventListener('click', pick);
+        el.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); }
+        });
+    });
+
+    function setBusy(state) {
+        busy = state;
+        generateBtn.disabled = state;
+        generateBtn.textContent = state ? '生成中…' : '✨ 一键生成换装效果';
+    }
+
+    generateBtn.addEventListener('click', function () {
+        if (busy) { return; }
+        if (!uploadedDataUrl) {
+            alert('请先上传你的照片');
+            uploadArea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+
+        resultArea.hidden = false;
+        loading.hidden = false;
+        compareResult.hidden = true;
+        resultNote.textContent = '';
+        originalImg.src = uploadedDataUrl;
+        setBusy(true);
+
+        fetch('/api/tryon', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ costume: selectedCostume, image: uploadedDataUrl })
+        })
+            .then(function (resp) {
+                if (!resp.ok) { throw new Error('服务返回 ' + resp.status); }
+                return resp.json();
+            })
+            .then(function (result) {
+                if (!result.success) {
+                    throw new Error(result.error || '生成失败');
+                }
+                resultImg.src = result.image_url;
+                resultLabel.textContent = (result.label || '换装效果') + (result.mode === 'demo' ? '（演示素材）' : '');
+                resultNote.textContent = result.mode === 'demo'
+                    ? '⚠ ' + (result.message || '当前为演示模式')
+                    : '✓ 已由 AI 生成，图片已保存到本地，可右键另存。';
+                resultNote.className = 'result-note' + (result.mode === 'demo' ? ' is-demo' : ' is-ok');
+                compareResult.hidden = false;
+                compareResult.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            })
+            .catch(function (err) {
+                resultNote.textContent = '✗ 生成失败：' + err.message + '。请检查网络或稍后重试。';
+                resultNote.className = 'result-note is-error';
+            })
+            .finally(function () {
+                loading.hidden = true;
+                setBusy(false);
+            });
+    });
+})();
+</script>
+{% endblock %}
