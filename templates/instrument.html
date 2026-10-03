@@ -53,21 +53,32 @@
 {% endblock %}
 
 {% block scripts %}
-<audio id="note1" src="{{ url_for('static', filename='audio/note1.mp3') }}" preload="auto"></audio>
-<audio id="note2" src="{{ url_for('static', filename='audio/note2.mp3') }}" preload="auto"></audio>
-<audio id="note3" src="{{ url_for('static', filename='audio/note3.mp3') }}" preload="auto"></audio>
-
 <script>
+/*
+ * 冬不拉音符 —— 由浏览器 Web Audio API 实时合成，不依赖任何音频文件。
+ *
+ * 合成思路：冬不拉是弹拨乐器，拨弦音的特点是「起音短促、泛音丰富、指数衰减」。
+ * 因此每个音符由 4 个正弦分量叠加而成（基频 + 二/三/四次泛音，幅度依次递减），
+ * 再套一条「极快起音 + 指数衰减」的包络。这样无需采样即可得到接近拨弦的音色。
+ */
 (function () {
     'use strict';
 
+    // 低 / 中 / 高三个音（G3、B3、D4），构成一个适合哼唱的五声音阶片段
+    var NOTE_FREQ = { 1: 196.00, 2: 246.94, 3: 293.66 };
+
+    // 泛音配方：[倍频, 相对幅度]，幅度递减以模拟拨弦的自然谐波衰减
+    var PARTIALS = [[1, 1.0], [2, 0.34], [3, 0.16], [4, 0.07]];
+
+    var NOTE_DURATION = 1.8;   // 单音持续时长（秒）
     var MELODIES = {
         1: [1, 3, 2, 3, 1, 3, 2, 1],
         2: [3, 2, 1, 2, 3, 3, 2, 1],
         3: [1, 1, 2, 3, 3, 2, 1, 2]
     };
-    var NOTE_INTERVAL = 400;
+    var NOTE_INTERVAL = 400;   // 旋律中相邻音符的间隔（毫秒）
 
+    var ctx = null;
     var timers = [];
     var statusEl = document.getElementById('status');
     var melodyBtns = Array.prototype.slice.call(document.querySelectorAll('.melody-btn[data-type]'));
@@ -76,23 +87,57 @@
         statusEl.textContent = text;
     }
 
+    // 延迟创建 AudioContext，且必须在用户手势中创建或恢复
+    function getCtx() {
+        var AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) { return null; }
+        if (!ctx) { ctx = new AC(); }
+        if (ctx.state === 'suspended' && ctx.resume) { ctx.resume(); }
+        return ctx;
+    }
+
+    function playNote(n) {
+        var audioCtx = getCtx();
+        if (!audioCtx) {
+            setStatus('当前浏览器不支持 Web Audio，建议使用 Chrome / Edge / Firefox。');
+            return;
+        }
+
+        var freq = NOTE_FREQ[n];
+        if (!freq) { return; }
+
+        var t0 = audioCtx.currentTime;
+
+        // 主输出：极快起音 → 指数衰减
+        var out = audioCtx.createGain();
+        out.gain.setValueAtTime(0.0001, t0);
+        out.gain.exponentialRampToValueAtTime(0.38, t0 + 0.008);
+        out.gain.exponentialRampToValueAtTime(0.0001, t0 + NOTE_DURATION);
+        out.connect(audioCtx.destination);
+
+        // 叠加泛音分量
+        for (var i = 0; i < PARTIALS.length; i++) {
+            var mult = PARTIALS[i][0];
+            var amp = PARTIALS[i][1];
+            var osc = audioCtx.createOscillator();
+            var gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq * mult, t0);
+            // 高次泛音衰减更快，听感更接近真实拨弦
+            gain.gain.setValueAtTime(amp, t0);
+            gain.gain.exponentialRampToValueAtTime(0.0001, t0 + NOTE_DURATION / mult);
+            osc.connect(gain);
+            gain.connect(out);
+            osc.start(t0);
+            osc.stop(t0 + NOTE_DURATION);
+        }
+    }
+
     function stopMelody(resetStatus) {
         timers.forEach(clearTimeout);
         timers = [];
         melodyBtns.forEach(function (b) { b.classList.remove('active'); });
         if (resetStatus) { setStatus(''); }
-    }
-
-    function playNote(n) {
-        var audio = document.getElementById('note' + n);
-        if (!audio) { return; }
-        try { audio.currentTime = 0; } catch (e) { /* 尚未加载完成时忽略 */ }
-        var p = audio.play();
-        if (p && typeof p.catch === 'function') {
-            p.catch(function () {
-                setStatus('浏览器拦截了播放，请先点击页面任意位置再试一次。');
-            });
-        }
     }
 
     function playMelody(type) {
@@ -129,6 +174,7 @@
         setStatus('已停止');
     });
 
+    // 连续点击琴钮会打断上一段旋律，避免声音叠加
     Array.prototype.forEach.call(document.querySelectorAll('.string-btn'), function (btn) {
         btn.addEventListener('click', function () {
             stopMelody(true);
