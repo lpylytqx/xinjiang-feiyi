@@ -1,4 +1,4 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 {% block title %}{% if data %}{{ data.name }}{% else %}非遗浏览{% endif %} - 新疆非遗文化互动体验平台{% endblock %}
 
 {% block content %}
@@ -13,56 +13,61 @@
             </button>
         </form>
         {% endfor %}
+
+        <div class="sidebar-extra">
+            <h3>互动体验</h3>
+            <a class="sidebar-link" href="{{ url_for('generator') }}"><span>🎨</span>纹样生成器</a>
+            <a class="sidebar-link" href="{{ url_for('instrument') }}"><span>🎵</span>冬不拉弹奏</a>
+            <a class="sidebar-link" href="{{ url_for('map') }}"><span>🗺️</span>非遗地图</a>
+            <a class="sidebar-link" href="{{ url_for('tryon') }}"><span>👗</span>AI 换装</a>
+            <a class="sidebar-link" href="{{ url_for('quiz') }}"><span>📝</span>知识问答</a>
+            <a class="sidebar-link" href="{{ url_for('fortune') }}"><span>🎋</span>祈福抽签</a>
+        </div>
     </div>
 
     <div class="main-content">
         {% if data %}
-        <h2 class="content-title">{{ data.name }}</h2>
+        <!-- 封面：图片 + 名称叠加 -->
+        <div class="detail-hero">
+            <img src="{{ data.img }}" alt="{{ data.name }}" loading="lazy">
+            <div class="detail-hero-text">
+                <h2>{{ data.name }}</h2>
+                {% if data.tags %}
+                <div class="tag-list">
+                    {% for t in data.tags %}<span class="tag">{{ t }}</span>{% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
 
-        {% if data.tags %}
-        <div class="tag-list">
-            {% for t in data.tags %}<span class="tag">{{ t }}</span>{% endfor %}
+        <!-- 速览：一眼可见的关键数据 -->
+        {% if data.facts %}
+        <div class="fact-grid">
+            {% for f in data.facts %}
+            <div class="fact-item">
+                <span class="fact-icon">{{ f.icon }}</span>
+                <span class="fact-label">{{ f.label }}</span>
+                <span class="fact-value">{{ f.value }}</span>
+            </div>
+            {% endfor %}
         </div>
         {% endif %}
 
-        <div class="section">
-            <h4>文化简介</h4>
-            <p>{{ data.intro }}</p>
-        </div>
-
-        <div class="section">
-            <h4>历史源流</h4>
-            <p>{{ data.history }}</p>
-        </div>
-
-        <div class="section">
-            <h4>工艺特点</h4>
-            <p>{{ data.craft }}</p>
-        </div>
-
-        <div class="section">
-            <h4>文化价值</h4>
-            <p>{{ data.value }}</p>
-        </div>
-
-        <div class="section">
-            <h4>分布地区</h4>
-            <p>{{ data.region }}</p>
-        </div>
-
-        <div class="section">
-            <h4>代表作品</h4>
-            <p>{{ data.representative }}</p>
-        </div>
-
-        <div class="img-box">
-            <img src="{{ data.img }}" alt="{{ data.name }}" loading="lazy">
-            <p class="img-caption">{{ data.name }} · 图片由 AI 辅助生成</p>
+        <!-- 正文段落 -->
+        <div class="section-grid">
+            {% for key, meta in section_meta.items() %}
+            {% if data[key] %}
+            <div class="section">
+                <h4><span class="section-icon">{{ meta.icon }}</span>{{ meta.label }}</h4>
+                <p>{{ data[key] }}</p>
+            </div>
+            {% endif %}
+            {% endfor %}
         </div>
 
         {% if data.patterns %}
         <div class="pattern-gallery">
-            <h4>相关纹样</h4>
+            <h4>🖼️ 相关纹样</h4>
             <p class="gallery-desc">以下纹样由 AI 辅助生成，供理解该项目的典型图案与配色参考。</p>
             <div class="pattern-grid">
                 {% for p in data.patterns %}
@@ -73,7 +78,7 @@
         {% endif %}
 
         <div class="audio-box">
-            <h4>语音讲解</h4>
+            <h4>🔊 语音讲解</h4>
             <audio controls preload="metadata">
                 <source src="{{ data.audio }}" type="audio/mpeg">
                 您的浏览器不支持音频播放，请<a href="{{ data.audio }}">点此下载收听</a>。
@@ -82,7 +87,7 @@
 
         {% if data.timeline %}
         <div class="timeline">
-            <h4>纹样演变时间线</h4>
+            <h4>🕰️ 纹样演变时间线</h4>
             <ul class="timeline-list">
                 {% for t in data.timeline %}
                 <li>
@@ -101,6 +106,21 @@
         </div>
         {% endif %}
 
+        <!-- 继续探索其他项目 -->
+        <div class="more-projects">
+            <h4>继续探索</h4>
+            <div class="more-grid">
+                {% for item in project_list %}
+                {% if item.key != selected %}
+                <a class="more-card" href="{{ url_for('index', project=item.key) }}">
+                    <span class="more-icon">{{ item.icon }}</span>
+                    <span class="more-label">{{ item.label }}</span>
+                </a>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
         {% else %}
         <div class="welcome-hero">
             <div class="hero-overlay">
@@ -113,27 +133,32 @@
             <a class="welcome-card" href="{{ url_for('generator') }}">
                 <div class="wc-icon">🎨</div>
                 <h4>纹样生成</h4>
-                <p>输入关键词生成民族纹样</p>
+                <p>关键词生成 · 手绘补全</p>
             </a>
             <a class="welcome-card" href="{{ url_for('instrument') }}">
                 <div class="wc-icon">🎵</div>
                 <h4>乐器互动</h4>
                 <p>亲手弹一段冬不拉</p>
             </a>
+            <a class="welcome-card" href="{{ url_for('map') }}">
+                <div class="wc-icon">🗺️</div>
+                <h4>非遗地图</h4>
+                <p>看项目分布在哪里</p>
+            </a>
             <a class="welcome-card" href="{{ url_for('costumes') }}">
                 <div class="wc-icon">👘</div>
                 <h4>民族服饰</h4>
                 <p>看各民族传统服饰</p>
             </a>
+            <a class="welcome-card" href="{{ url_for('tryon') }}">
+                <div class="wc-icon">👗</div>
+                <h4>AI 换装</h4>
+                <p>上传照片试穿民族服饰</p>
+            </a>
             <a class="welcome-card" href="{{ url_for('quiz') }}">
                 <div class="wc-icon">📝</div>
                 <h4>知识测验</h4>
                 <p>检验你的了解程度</p>
-            </a>
-            <a class="welcome-card" href="{{ url_for('fortune') }}">
-                <div class="wc-icon">🎋</div>
-                <h4>祈福抽签</h4>
-                <p>抽个纹样看今日运势</p>
             </a>
         </div>
 
@@ -153,7 +178,7 @@
             </div>
             <div class="stat-item">
                 <div class="stat-num">20+</div>
-                <div class="stat-label">AI生成素材</div>
+                <div class="stat-label">AI 生成素材</div>
             </div>
         </div>
 
@@ -165,5 +190,3 @@
     </div>
 </div>
 {% endblock %}
-
-

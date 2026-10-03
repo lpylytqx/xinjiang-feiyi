@@ -10,10 +10,74 @@
 </head>
 <body>
     {% set ep = request.endpoint %}
-    <div class="header">
-        <h1>新疆非遗文化互动体验平台</h1>
-        <p>探索新疆各民族非物质文化遗产之美</p>
-    </div>
+    <header class="header">
+        <div class="header-deco" aria-hidden="true">
+            <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+                <g fill="none" stroke="currentColor" stroke-width="1.4">
+                    <path d="M80 8 L152 80 L80 152 L8 80 Z"/>
+                    <path d="M80 26 L134 80 L80 134 L26 80 Z"/>
+                    <circle cx="80" cy="80" r="18"/>
+                    <circle cx="80" cy="52" r="12"/>
+                    <circle cx="80" cy="108" r="12"/>
+                    <circle cx="52" cy="80" r="12"/>
+                    <circle cx="108" cy="80" r="12"/>
+                    <circle cx="60" cy="60" r="10"/>
+                    <circle cx="100" cy="60" r="10"/>
+                    <circle cx="60" cy="100" r="10"/>
+                    <circle cx="100" cy="100" r="10"/>
+                    <circle cx="80" cy="80" r="6"/>
+                </g>
+            </svg>
+        </div>
+
+        <div class="header-inner">
+            <div class="header-title-row">
+                <span class="header-mark" aria-hidden="true">
+                    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M32 5 L59 32 L32 59 L5 32 Z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/>
+                        <circle cx="32" cy="32" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="32" cy="32" r="3.6" fill="currentColor"/>
+                        <circle cx="32" cy="14" r="2.6" fill="currentColor"/>
+                        <circle cx="32" cy="50" r="2.6" fill="currentColor"/>
+                        <circle cx="14" cy="32" r="2.6" fill="currentColor"/>
+                        <circle cx="50" cy="32" r="2.6" fill="currentColor"/>
+                    </svg>
+                </span>
+                <h1>新疆非遗文化互动体验平台</h1>
+            </div>
+
+            <div class="header-rule" aria-hidden="true">
+                <span></span><i>◆</i><span></span>
+            </div>
+
+            <p>探索新疆各民族非物质文化遗产之美</p>
+
+            <div class="header-tags">
+                <span>5 个国家级非遗项目</span>
+                <span>9 项互动体验</span>
+                <span>AIGC 驱动</span>
+            </div>
+        </div>
+
+        <div class="header-deco" aria-hidden="true">
+            <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+                <g fill="none" stroke="currentColor" stroke-width="1.4">
+                    <path d="M80 8 L152 80 L80 152 L8 80 Z"/>
+                    <path d="M80 26 L134 80 L80 134 L26 80 Z"/>
+                    <circle cx="80" cy="80" r="18"/>
+                    <circle cx="80" cy="52" r="12"/>
+                    <circle cx="80" cy="108" r="12"/>
+                    <circle cx="52" cy="80" r="12"/>
+                    <circle cx="108" cy="80" r="12"/>
+                    <circle cx="60" cy="60" r="10"/>
+                    <circle cx="100" cy="60" r="10"/>
+                    <circle cx="60" cy="100" r="10"/>
+                    <circle cx="100" cy="100" r="10"/>
+                    <circle cx="80" cy="80" r="6"/>
+                </g>
+            </svg>
+        </div>
+    </header>
 
     <nav class="nav">
         <a href="{{ url_for('index') }}"{% if ep == 'index' %} class="active"{% endif %}>非遗浏览</a>
@@ -29,9 +93,50 @@
 
     {% block content %}{% endblock %}
 
-    <div class="footer">
-        本作品部分图片、文字、音频内容由AI辅助生成 · 仅供教学展示使用
-    </div>
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-col">
+                <h4>非遗项目</h4>
+                <a href="{{ url_for('index') }}?project=embroidery">维吾尔族刺绣</a>
+                <a href="{{ url_for('index') }}?project=dombra">哈萨克族冬不拉艺术</a>
+                <a href="{{ url_for('index') }}?project=atlas">艾德莱斯绸织造技艺</a>
+                <a href="{{ url_for('index') }}?project=carpet">新疆地毯编织技艺</a>
+                <a href="{{ url_for('index') }}?project=manas">《玛纳斯》史诗</a>
+            </div>
+
+            <div class="footer-col">
+                <h4>互动体验</h4>
+                <a href="{{ url_for('generator') }}">纹样生成器</a>
+                <a href="{{ url_for('instrument') }}">冬不拉弹奏</a>
+                <a href="{{ url_for('quiz') }}">知识问答</a>
+                <a href="{{ url_for('costumes') }}">民族服饰展示</a>
+                <a href="{{ url_for('map') }}">非遗分布地图</a>
+            </div>
+
+            <div class="footer-col">
+                <h4>AI 功能</h4>
+                <a href="{{ url_for('tryon') }}">AI 民族换装</a>
+                <a href="{{ url_for('generator') }}">手绘纹样补全</a>
+                <a href="{{ url_for('fortune') }}">纹样祈福抽签</a>
+                <a href="{{ url_for('about') }}">关于项目</a>
+            </div>
+
+            <div class="footer-col footer-about">
+                <h4>关于本平台</h4>
+                <p>基于 AIGC 的新疆非遗文化互动体验平台，收录 5 个国家级非物质文化遗产项目，以图文、语音、音乐与生成式 AI 多模态呈现。</p>
+                <div class="footer-badges">
+                    <span>Python · Flask</span>
+                    <span>原生前端</span>
+                    <span>断网可演示</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>本作品部分图片、文字、音频内容由AI辅助生成 · 仅供教学展示使用</p>
+            <p class="footer-credit">实景照片来自 Wikimedia Commons（CC 授权）：天山冰川 © Maryliflower（CC BY-SA 4.0）· 天山云海 © N509FZ（CC BY-SA 4.0）· 喀什老城 © Radosław Botev（CC BY 3.0 pl）</p>
+        </div>
+    </footer>
 
     <!-- 回到顶部按钮 -->
     <button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>

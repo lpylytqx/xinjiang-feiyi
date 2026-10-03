@@ -180,6 +180,61 @@ for _key, _imgs in pattern_library.items():
 
 
 # ==========================================================
+# 首页速览信息
+# 进入项目详情后先给出一眼可见的关键数据，避免一上来就是大段文字。
+# 名录年份与项目编号依据中国非物质文化遗产网（ihchina.cn）项目页。
+# 类别代号：Ⅰ 民间文学 · Ⅱ 传统音乐 · Ⅶ 传统美术 · Ⅷ 传统技艺
+# ==========================================================
+project_facts = {
+    "embroidery": [
+        {"icon": "🏛️", "label": "名录", "value": "2008 年第二批 · Ⅶ-79"},
+        {"icon": "📚", "label": "类别", "value": "传统美术"},
+        {"icon": "📍", "label": "分布", "value": "喀什、和田、阿克苏、吐鲁番"},
+        {"icon": "🧵", "label": "代表", "value": "花帽（朵帕）、壁挂、服饰刺绣"},
+    ],
+    "dombra": [
+        {"icon": "🏛️", "label": "名录", "value": "2008 年第二批 · Ⅱ-132"},
+        {"icon": "📚", "label": "类别", "value": "传统音乐"},
+        {"icon": "📍", "label": "分布", "value": "伊犁、巴里坤等哈萨克族聚居区"},
+        {"icon": "🎵", "label": "代表", "value": "冬不拉曲《黑走马》等"},
+    ],
+    "atlas": [
+        {"icon": "🏛️", "label": "名录", "value": "2008 年第二批 · Ⅷ-109"},
+        {"icon": "📚", "label": "类别", "value": "传统技艺"},
+        {"icon": "📍", "label": "分布", "value": "和田洛浦、喀什"},
+        {"icon": "👘", "label": "代表", "value": "波浪纹、菱形纹、花卉纹"},
+    ],
+    "carpet": [
+        {"icon": "🏛️", "label": "名录", "value": "2008 年第二批 · Ⅷ-110"},
+        {"icon": "📚", "label": "类别", "value": "传统技艺"},
+        {"icon": "📍", "label": "分布", "value": "和田、喀什、阿克苏"},
+        {"icon": "🧶", "label": "代表", "value": "团花纹、多层连续边框"},
+    ],
+    "manas": [
+        {"icon": "🏛️", "label": "名录", "value": "2006 年第一批 · 2009 年入选联合国名录"},
+        {"icon": "📚", "label": "类别", "value": "民间文学"},
+        {"icon": "📍", "label": "分布", "value": "克孜勒苏柯尔克孜自治州等"},
+        {"icon": "📜", "label": "规模", "value": "八部唱本 · 二十三万余行"},
+    ],
+}
+
+for _k, _facts in project_facts.items():
+    if _k in feiyi_data:
+        feiyi_data[_k]["facts"] = _facts
+
+
+# 详情页各段落的图标与标题（供模板统一渲染）
+section_meta = {
+    "intro": {"icon": "📖", "label": "文化简介"},
+    "history": {"icon": "🕰️", "label": "历史源流"},
+    "craft": {"icon": "🛠️", "label": "工艺特点"},
+    "value": {"icon": "✨", "label": "文化价值"},
+    "region": {"icon": "📍", "label": "分布地区"},
+    "representative": {"icon": "🏆", "label": "代表作品"},
+}
+
+
+# ==========================================================
 # 纹样生成器：三种风格的特征说明
 # ==========================================================
 style_options = [
@@ -299,6 +354,7 @@ def index():
         project_list=project_list,
         selected=selected if data else None,
         data=data,
+        section_meta=section_meta,
     )
 
 

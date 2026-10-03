@@ -39,3 +39,4 @@ static/generated/
 Thumbs.db
 *.swp
 *.log
+*.bak

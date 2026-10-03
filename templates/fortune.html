@@ -21,6 +21,71 @@
 
         <p class="fortune-note">签文为趣味解读，纹样图案由 AI 辅助生成，不作为任何预测依据。</p>
     </div>
+
+    <!-- 纹样母题图鉴 -->
+    <div class="card">
+        <h2>📖 纹样母题图鉴</h2>
+        <p class="desc">以下六种母题是新疆各民族织物、刺绣与器物上常见的装饰题材。点击任意一枚，可以看它的寓意解读。</p>
+
+        <div class="motif-grid" id="motifGrid"></div>
+    </div>
+
+    <!-- 母题小知识 -->
+    <div class="card">
+        <h2>💡 什么是纹样母题</h2>
+        <p>母题（motif）指装饰艺术中反复出现的主题图案。新疆各民族的传统纹样多取材于当地常见的植物、果实与生活器物，同一母题在不同地区、不同工艺中会呈现出不同的画法与配色。</p>
+
+        <div class="motif-notes">
+            <div class="motif-note">
+                <h4><span>🍎</span>石榴纹</h4>
+                <p>石榴多籽，在传统图案中常被用来表达多子多福、家族兴旺的祝愿，多见于刺绣、地毯与花帽。</p>
+            </div>
+            <div class="motif-note">
+                <h4><span>🌰</span>巴旦木纹</h4>
+                <p>巴旦木是新疆传统的干果，其果核形状被抽象成装饰母题，常用于花帽与刺绣的边缘装饰。</p>
+            </div>
+            <div class="motif-note">
+                <h4><span>🌊</span>艾德莱斯纹</h4>
+                <p>图案由扎经染色工艺形成，色彩边缘自然晕散、难以完全复制，常见波浪纹与菱形纹的组合。</p>
+            </div>
+        </div>
+
+        <p class="fortune-note">以上为工艺与图案特点的概括描述，未涉及具体年代与传承谱系。</p>
+    </div>
+
+    <div class="card">
+        <h2>🧵 纹样从哪里来</h2>
+        <p>上面这些图案并非凭空设计。它们来自巴扎上成匹的织物、作坊里绷紧的经纬线，来自匠人日复一日的描画与织造。下面两张实景照片呈现的正是这些纹样的生活土壤。</p>
+
+        <div class="scene-grid">
+            <figure class="scene-item">
+                <img src="{{ url_for('static', filename='images/real/kashgar_bazaar.jpg') }}"
+                     alt="喀什大巴扎内景" loading="lazy">
+                <figcaption>
+                    喀什大巴扎 · 地毯、丝绸与花帽在这里交易，纹样在买卖之间流传
+                    <span>摄影 D-Stanley / Flickr（CC BY 2.0）</span>
+                </figcaption>
+            </figure>
+            <figure class="scene-item">
+                <img src="{{ url_for('static', filename='images/real/hotan_silk.jpg') }}"
+                     alt="和田传统丝绸作坊" loading="lazy">
+                <figcaption>
+                    和田传统丝绸作坊 · 匠人正在整理经线，旁边是扎染好的艾德莱斯绸
+                    <span>摄影 Dmitry P / Wikimedia Commons（CC BY 2.0）</span>
+                </figcaption>
+            </figure>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>🎨 想自己画一枚？</h2>
+        <p>纹样生成器支持两种玩法：输入关键词由 AI 生成纹样，或者在画板上随手勾几笔、让 AI 沿笔触补全成一幅完整的民族纹样。</p>
+        <div class="fortune-links">
+            <a class="detail-link" href="{{ url_for('generator') }}">去纹样生成器 →</a>
+            <a class="detail-link" href="{{ url_for('index', project='embroidery') }}">看维吾尔族刺绣 →</a>
+            <a class="detail-link" href="{{ url_for('costumes') }}">看民族服饰上的纹样 →</a>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
@@ -34,37 +99,43 @@
             name: "石榴花纹样",
             img: "{{ url_for('static', filename='images/pattern_emb3.jpg') }}",
             meaning: "石榴在新疆各民族纹样中是常见的母题，寓意多子多福、家族兴旺。今日的你灵感旺盛，想到什么好点子就大胆去做。",
-            lucky: "幸运色：石榴红"
+            lucky: "幸运色：石榴红",
+            intro: "石榴多籽，常用来表达家族兴旺的祝愿。"
         },
         {
             name: "玫瑰刺绣纹样",
             img: "{{ url_for('static', filename='images/pattern_emb1.jpg') }}",
             meaning: "花卉是维吾尔族刺绣最常见的题材，玫瑰常用来表达美好与情谊。今日人际关系顺利，适合把心意说出来。",
-            lucky: "幸运色：玫瑰粉"
+            lucky: "幸运色：玫瑰粉",
+            intro: "花卉纹是刺绣中最常见的题材，象征美好与情谊。"
         },
         {
             name: "巴旦木花纹",
             img: "{{ url_for('static', filename='images/pattern_emb2.jpg') }}",
             meaning: "巴旦木（扁桃）是新疆传统的装饰母题，象征坚韧与生命力。今天遇到的小困难都是暂时的，坚持一下就能看到转机。",
-            lucky: "幸运色：大地棕"
+            lucky: "幸运色：大地棕",
+            intro: "取自巴旦木果核的形状，常作边缘装饰。"
         },
         {
             name: "艾德莱斯绸纹",
             img: "{{ url_for('static', filename='images/pattern_atlas1.jpg') }}",
             meaning: "艾德莱斯绸的图案由扎经染色形成，无法复制，象征精彩与变化。今天可能会有小惊喜出现，保持开放心态。",
-            lucky: "幸运色：宝石蓝"
+            lucky: "幸运色：宝石蓝",
+            intro: "扎经染色而成，色彩边缘自然晕散。"
         },
         {
             name: "地毯团花纹",
             img: "{{ url_for('static', filename='images/pattern_carp1.jpg') }}",
             meaning: "团花与多层边框是新疆地毯的典型构图，讲究对称与饱满，给人以稳定感。今天适合整理内务、规划未来。",
-            lucky: "幸运色：酒红色"
+            lucky: "幸运色：酒红色",
+            intro: "中心团花配多层边框，是地毯的典型构图。"
         },
         {
             name: "几何菱形纹",
             img: "{{ url_for('static', filename='images/pattern_atlas2.jpg') }}",
             meaning: "菱形与波浪是艾德莱斯绸上最典型的几何母题，代表方向与抉择。今天如果面临选择，相信第一直觉。",
-            lucky: "幸运色：暖橙色"
+            lucky: "幸运色：暖橙色",
+            intro: "菱形与波浪组合，广泛出现在织物上。"
         }
     ];
 
@@ -74,6 +145,19 @@
     var meaningEl = document.getElementById('patternMeaning');
     var luckyEl = document.getElementById('luckyColor');
     var lastIndex = -1;
+
+    function show(i) {
+        var f = fortunes[i];
+        imgEl.src = f.img;
+        imgEl.alt = f.name;
+        nameEl.textContent = f.name;
+        meaningEl.textContent = f.meaning;
+        luckyEl.textContent = f.lucky;
+
+        resultEl.classList.remove('show');
+        void resultEl.offsetWidth;
+        resultEl.classList.add('show');
+    }
 
     function draw() {
         var i = Math.floor(Math.random() * fortunes.length);
@@ -86,19 +170,29 @@
             }
         }
         lastIndex = i;
-
-        var f = fortunes[i];
-        imgEl.src = f.img;
-        imgEl.alt = f.name;
-        nameEl.textContent = f.name;
-        meaningEl.textContent = f.meaning;
-        luckyEl.textContent = f.lucky;
-
-        // 重新触发入场动画
-        resultEl.classList.remove('show');
-        void resultEl.offsetWidth;
-        resultEl.classList.add('show');
+        show(i);
     }
+
+    // 图鉴：把六种母题全部铺出来
+    var grid = document.getElementById('motifGrid');
+    var html = '';
+    for (var k = 0; k < fortunes.length; k++) {
+        html += '<button type="button" class="motif-item" data-index="' + k + '">' +
+                    '<img src="' + fortunes[k].img + '" alt="' + fortunes[k].name + '" loading="lazy">' +
+                    '<strong>' + fortunes[k].name + '</strong>' +
+                    '<span>' + fortunes[k].intro + '</span>' +
+                '</button>';
+    }
+    grid.innerHTML = html;
+
+    grid.addEventListener('click', function (e) {
+        var btn = e.target.closest ? e.target.closest('.motif-item') : null;
+        if (!btn) { return; }
+        var idx = parseInt(btn.getAttribute('data-index'), 10);
+        lastIndex = idx;
+        show(idx);
+        resultEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
 
     document.getElementById('draw-btn').addEventListener('click', draw);
     document.getElementById('again-btn').addEventListener('click', draw);

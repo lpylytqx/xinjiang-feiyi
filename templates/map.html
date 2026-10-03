@@ -5,7 +5,7 @@
 <div class="container mid">
     <div class="card">
         <h2>🗺️ 新疆非遗分布地图</h2>
-        <p class="desc">地图边界与地州划分依据公开行政区划数据绘制。点击地图上的标记或右侧列表，查看对应地区的代表性非遗项目。</p>
+        <p class="desc">地图边界与地州划分依据公开行政区划数据绘制。点击地图上的标记或右侧列表，即可看到该地的实景照片与代表性非遗项目。</p>
 
         <div class="map-layout">
             <div class="map-stage">
@@ -110,6 +110,7 @@
             <span class="legend-item"><i class="legend-dot"></i>非遗项目分布点</span>
             <span class="legend-item"><i class="legend-line"></i>地州边界</span>
             <span class="legend-item">5 个项目 · 4 个代表性地区</span>
+            <span class="legend-item">点击标记可查看当地实景照片</span>
         </div>
     </div>
 
@@ -160,10 +161,26 @@
     };
 
     var REGIONS = {
-        yining: '伊犁哈萨克自治州',
-        wuqia: '克孜勒苏柯尔克孜自治州',
-        kashgar: '喀什地区',
-        hotan: '和田地区'
+        yining: {
+            name: '伊犁哈萨克自治州',
+            photo: '/static/images/real/ili_nalati.jpg',
+            credit: '那拉提草原 · 摄影 Yoshi Canopus / Wikimedia Commons（CC0）'
+        },
+        wuqia: {
+            name: '克孜勒苏柯尔克孜自治州',
+            photo: '/static/images/real/kizilsu_yurt.jpg',
+            credit: '柯尔克孜族毡房 · 摄影 katorisi / Wikimedia Commons（CC BY-SA 3.0）'
+        },
+        kashgar: {
+            name: '喀什地区',
+            photo: '/static/images/real/kashgar_old_city.jpg',
+            credit: '喀什老城 · 摄影 Radosław Botev / Wikimedia Commons（CC BY 3.0 pl）'
+        },
+        hotan: {
+            name: '和田地区',
+            photo: '/static/images/real/hotan_silk.jpg',
+            credit: '和田传统丝绸作坊 · 摄影 Dmitry P / Wikimedia Commons（CC BY 2.0）'
+        }
     };
 
     var detail = document.getElementById('siteDetail');
@@ -191,12 +208,18 @@
             if (b.getAttribute('data-project') === key) { b.classList.add('active'); }
         });
 
+        var region = REGIONS[p.site] || {};
+
         detail.innerHTML =
+            (region.photo
+                ? '<div class="detail-photo"><img src="' + region.photo + '" alt="' + region.name + '实景照片" loading="lazy">' +
+                  '<span class="detail-photo-credit">' + region.credit + '</span></div>'
+                : '') +
             '<div class="detail-head">' +
                 '<span class="detail-icon">' + p.icon + '</span>' +
                 '<div>' +
                     '<h4>' + p.name + '</h4>' +
-                    '<span class="detail-region">' + (REGIONS[p.site] || '') + '</span>' +
+                    '<span class="detail-region">' + (region.name || '') + '</span>' +
                 '</div>' +
             '</div>' +
             '<p>' + p.desc + '</p>' +
@@ -220,10 +243,16 @@
             if (g.getAttribute('data-site') === siteKey) { g.classList.add('active'); }
         });
 
-        var html = '<div class="detail-head"><span class="detail-icon">📍</span><div>' +
-                   '<h4>' + (REGIONS[siteKey] || '') + '</h4>' +
-                   '<span class="detail-region">该地区有 ' + keys.length + ' 个代表性项目</span>' +
-                   '</div></div><div class="detail-links">';
+        var region = REGIONS[siteKey] || {};
+        var html =
+            (region.photo
+                ? '<div class="detail-photo"><img src="' + region.photo + '" alt="' + region.name + '实景照片" loading="lazy">' +
+                  '<span class="detail-photo-credit">' + region.credit + '</span></div>'
+                : '') +
+            '<div class="detail-head"><span class="detail-icon">📍</span><div>' +
+            '<h4>' + (region.name || '') + '</h4>' +
+            '<span class="detail-region">该地区有 ' + keys.length + ' 个代表性项目</span>' +
+            '</div></div><div class="detail-links">';
         keys.forEach(function (k) {
             html += '<button type="button" class="detail-chip" data-jump="' + k + '">' +
                     PROJECTS[k].icon + ' ' + PROJECTS[k].name + '</button>';

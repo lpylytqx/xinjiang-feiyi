@@ -3,10 +3,35 @@
 
 {% block content %}
 <div class="container">
+    <div class="stats-row">
+        <div class="stat-item">
+            <div class="stat-num">5</div>
+            <div class="stat-label">国家级非遗项目</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-num">9</div>
+            <div class="stat-label">功能页面</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-num">4</div>
+            <div class="stat-label">类 AI 生成能力</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-num">23</div>
+            <div class="stat-label">本地素材文件</div>
+        </div>
+    </div>
+
     <div class="card section-card">
         <h2>📋 项目背景</h2>
         <p>新疆作为多民族聚居地区，拥有丰富的非物质文化遗产资源。然而，传统非遗传播方式以静态展示为主，缺乏互动性和沉浸感，年轻人对非遗的了解途径有限。</p>
         <p>本项目利用AIGC技术，将新疆非遗文化以多模态、可交互的形式呈现，让用户通过浏览、创作、互动、答题等多种方式，沉浸式体验新疆各民族非遗文化之美。</p>
+
+        <div class="about-photo">
+            <img src="{{ url_for('static', filename='images/real/tianshan_baicheng.jpg') }}"
+                 alt="天山山脉云海" loading="lazy">
+            <p class="photo-caption">天山山脉（拜城段）· 摄影 N509FZ / Wikimedia Commons（CC BY-SA 4.0）</p>
+        </div>
     </div>
 
     <div class="card section-card">
