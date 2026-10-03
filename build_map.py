@@ -18,7 +18,8 @@ import os
 
 import requests
 
-OUT = r"D:\xinjiang_feiyi\templates\_map_path.svg"
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                   "templates", "_map_path.svg")
 URL_PROV = "https://geo.datav.aliyun.com/areas_v3/bound/650000.json"
 URL_FULL = "https://geo.datav.aliyun.com/areas_v3/bound/650000_full.json"
 
