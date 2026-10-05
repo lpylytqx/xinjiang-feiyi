@@ -33,20 +33,53 @@
 
 ## 运行方式
 
+### Windows：双击启动（推荐）
+
+直接双击根目录的 **`启动网站.bat`**，脚本会自动完成四步：
+
+1. 查找可用的 Python 解释器
+2. 检查 Python 版本
+3. 检查并安装缺失的依赖（Flask / requests / Pillow）
+4. 启动服务，并在 3 秒后自动打开浏览器
+
+任一步失败都会显示明确错误并暂停，**不会静默退出**。
+
+### 手动启动（任意平台）
+
 ```bash
 # 1. 安装依赖
-pip install -r requirements.txt
+py -3 -m pip install -r requirements.txt
 
 # 2.（可选）配置 API Key —— 不配置也能运行，相关功能会自动降级
-#    在项目根目录新建 config_local.py：
+#    在项目根目录新建 config_local.py，必须保存为 UTF-8 编码：
 #      SILICONFLOW_API_KEY = "sk-..."
 #      DEEPSEEK_API_KEY   = "sk-..."
 
 # 3. 启动
-python app.py
+py -3 app.py
 ```
 
-启动后访问 <http://127.0.0.1:5000>。Windows 下也可直接双击 `start.bat`。
+启动后访问 <http://127.0.0.1:5000>。
+
+> **关于 `py -3` 与 `python` 的区别**
+>
+> Windows 上执行 `python` 时，可能命中的是 **Microsoft Store 的「应用执行别名」** ——
+> 它被调用时**不执行任何 Python 代码，却会返回退出码 0**。脚本若用它做依赖检查，
+> 会误判成「依赖已就绪」，然后静默失败。`py -3` 是 Python 官方的启动器，
+> 能可靠定位到真实安装，因此本项目统一使用它。
+>
+> 若目标机器没有 `py` 启动器，`启动网站.bat` 会依次回退到
+> **验证过可用的 `python`** 和**常见安装路径**，并在全部失败时给出安装提示。
+
+### 常见启动问题
+
+| 现象 | 原因 | 解决 |
+|---|---|---|
+| 双击 bat 后窗口闪退 | 机器上没有 Python | 安装 Python 3.10+，安装时勾选 **Add Python to PATH** |
+| 提示找不到 Python，但明明装了 | 只装了 Store 版别名 | 到 python.org 下载正式版重新安装 |
+| `SyntaxError: Non-UTF-8 code ... config_local.py` | 配置文件存成了 GBK 或混合编码 | 用 VS Code / 记事本「另存为」→ 编码选 **UTF-8** |
+| 依赖安装失败 | 网络不通或默认源不可用 | 换国内源：`py -3 -m pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple` |
+| 服务启动了但浏览器没打开 | 系统拦截了脚本调用浏览器 | 手动访问 <http://127.0.0.1:5000> |
 
 ## 关于素材文件
 
